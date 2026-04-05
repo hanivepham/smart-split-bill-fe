@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; import { Link } from 'react-router-dom'; // Tambahin ini
 import { Calculator, Users, Maximize, Percent, Clock, Share2 } from 'lucide-react';
 
 function Home() {
@@ -41,9 +41,9 @@ function Home() {
                             <button className="bg-gradient-to-r from-pink-400 to-blue-400 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition shadow-lg shadow-blue-200">
                                 Mulai Sekarang
                             </button>
-                            <button className="border-2 border-pink-200 text-pink-500 px-6 py-3 rounded-full font-semibold hover:bg-pink-50 transition">
+                            <Link to="/features" className="border-2 border-pink-200 text-pink-500 px-6 py-3 rounded-full font-semibold hover:bg-pink-50 transition text-center">
                                 Pelajari Fitur
-                            </button>
+                            </Link>
                         </div>
                     </div>
 
