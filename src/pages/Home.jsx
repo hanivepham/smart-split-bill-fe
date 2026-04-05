@@ -16,7 +16,7 @@ function Home() {
                 </div>
                 <div className="hidden md:flex gap-8 text-sm font-medium text-slate-500">
                     <a href="#" className="hover:text-blue-500">Home</a>
-                    <a href="#" className="hover:text-blue-500">Features</a>
+                    <a href="#features" className="hover:text-blue-500">Features</a>
                     <a href="#" className="hover:text-blue-500">About</a>
                 </div>
                 <button className="bg-gradient-to-r from-pink-400 to-blue-400 text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-md shadow-blue-200">
@@ -57,7 +57,7 @@ function Home() {
                 </div>
 
                 {/* FITUR SECTION */}
-                <div className="mt-32">
+                <div id="features" className="mt-32 scroll-mt-24">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500 inline-block pb-1">
                             Fitur Unggulan
