@@ -19,9 +19,9 @@ function Home() {
                     <a href="#features" className="hover:text-blue-500">Features</a>
                     <a href="#" className="hover:text-blue-500">About</a>
                 </div>
-                <button className="bg-gradient-to-r from-pink-400 to-blue-400 text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-md shadow-blue-200">
+                <Link to="/dashboard" className="bg-gradient-to-r from-pink-400 to-blue-400 text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-md shadow-blue-200">
                     Start Now
-                </button>
+                </Link>
             </nav>
 
             {/* HERO SECTION */}
@@ -38,9 +38,9 @@ function Home() {
                             Hitung dan bagi tagihan bersama teman secara cepat, akurat, dan transparan
                         </p>
                         <div className="flex gap-4 pt-4">
-                            <button className="bg-gradient-to-r from-pink-400 to-blue-400 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition shadow-lg shadow-blue-200">
+                            <Link to="/dashboard" className="bg-gradient-to-r from-pink-400 to-blue-400 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition shadow-lg shadow-blue-200">
                                 Mulai Sekarang
-                            </button>
+                            </Link>
                             <Link to="/features" className="border-2 border-pink-200 text-pink-500 px-6 py-3 rounded-full font-semibold hover:bg-pink-50 transition text-center">
                                 Pelajari Fitur
                             </Link>

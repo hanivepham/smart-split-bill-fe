@@ -141,9 +141,9 @@ function Features() {
           <p className="text-slate-500 mb-8 max-w-md mx-auto">
             Mulai bagi tagihan dengan teman-temanmu sekarang. Gratis dan mudah digunakan!
           </p>
-          <button className="bg-gradient-to-r from-pink-400 to-blue-400 text-white px-8 py-3 rounded-full font-bold hover:opacity-90 transition shadow-lg shadow-blue-200">
+          <Link to="/dashboard" className="inline-block bg-gradient-to-r from-pink-400 to-blue-400 text-white px-8 py-3 rounded-full font-bold hover:opacity-90 transition shadow-lg shadow-blue-200">
             Mulai Sekarang
-          </button>
+          </Link>
         </div>
       </main>
 
