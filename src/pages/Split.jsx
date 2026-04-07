@@ -12,29 +12,44 @@ import {
   Percent,
   Check,
   User,
-  X
+  X,
+  Split as SplitIcon,
+  PenLine,
+  CheckCircle2
 } from 'lucide-react';
 
 function Split() {
   const [totalTagihan, setTotalTagihan] = useState('');
-  const [jumlahOrang, setJumlahOrang] = useState('');
-  const [peserta, setPeserta] = useState([]);
+  const [jumlahOrang, setJumlahOrang] = useState(2);
+  const [participants, setParticipants] = useState([]);
   const [currentStep, setCurrentStep] = useState(1);
+  const [splitMethod, setSplitMethod] = useState('rata');
 
-  const handlePesertaChange = (index, value) => {
-    const newPeserta = [...peserta];
-    newPeserta[index] = value;
-    setPeserta(newPeserta);
+  const handleLanjutStep1 = () => {
+    if (totalTagihan > 0 && jumlahOrang > 0) {
+      // Buat array baru sesuai jumlah orang jika belum ada
+      if (participants.length !== Number(jumlahOrang)) {
+        const newParticipants = Array.from({ length: Number(jumlahOrang) }, (_, i) => ({
+          id: i + 1,
+          name: ''
+        }));
+        setParticipants(newParticipants);
+      }
+      setCurrentStep(2);
+    }
   };
 
-  const removePeserta = (indexToRemove) => {
+  const removeParticipant = (indexToRemove) => {
     const currentCount = Math.max(2, Number(jumlahOrang) || 2);
     if (currentCount <= 2) return; // minimal 2 orang tidak bisa dihapus lagi
 
     setJumlahOrang(currentCount - 1);
-    const newPeserta = peserta.filter((_, index) => index !== indexToRemove);
-    setPeserta(newPeserta);
+    const newParticipants = participants.filter((_, index) => index !== indexToRemove);
+    setParticipants(newParticipants);
   };
+
+  const filledCount = participants.filter(p => p.name.trim() !== '').length;
+  const isAllFilled = filledCount > 0 && filledCount === Number(jumlahOrang);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12">
@@ -45,7 +60,7 @@ function Split() {
             <ArrowLeft className="text-slate-600 w-5 h-5" />
           </Link>
         ) : (
-          <button onClick={() => setCurrentStep(1)} className="p-2 hover:bg-slate-100 rounded-full transition">
+          <button onClick={() => setCurrentStep(currentStep - 1)} className="p-2 hover:bg-slate-100 rounded-full transition">
             <ArrowLeft className="text-slate-600 w-5 h-5" />
           </button>
         )}
@@ -64,49 +79,31 @@ function Split() {
         {/* STEPPER INDICATOR */}
         <div className="flex items-center justify-center mb-10">
           <div className="flex items-center">
-            {/* Step 1 */}
-            <div className="flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-400 to-blue-400 flex items-center justify-center text-white font-bold shadow-md">
-                {currentStep > 1 ? <Check className="w-6 h-6" /> : "1"}
-              </div>
-              <span className="text-xs font-bold text-pink-500 mt-2">Step 1</span>
-            </div>
-            <div className={`w-12 h-[2px] mb-6 mx-2 ${currentStep > 1 ? 'bg-gradient-to-r from-pink-400 to-blue-300' : 'bg-slate-200'}`}></div>
-            
-            {/* Step 2 */}
-            <div className={`flex flex-col items-center ${currentStep === 1 ? 'opacity-50' : ''}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${currentStep >= 2 ? 'bg-gradient-to-r from-purple-300 to-blue-300 text-white shadow-md' : 'bg-white border-2 border-slate-200 text-slate-400'}`}>
-                2
-              </div>
-              <span className={`text-xs mt-2 ${currentStep >= 2 ? 'font-bold text-purple-500' : 'font-medium text-slate-400'}`}>Step 2</span>
-            </div>
-            <div className="w-12 h-[2px] bg-slate-200 mb-6 mx-2"></div>
-
-            {/* Step 3 */}
-            <div className="flex flex-col items-center opacity-50">
-              <div className="w-10 h-10 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center text-slate-400 font-bold">
-                3
-              </div>
-              <span className="text-xs font-medium text-slate-400 mt-2">Step 3</span>
-            </div>
-            <div className="w-12 h-[2px] bg-slate-200 mb-6 mx-2"></div>
-
-            {/* Step 4 */}
-            <div className="flex flex-col items-center opacity-50">
-              <div className="w-10 h-10 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center text-slate-400 font-bold">
-                4
-              </div>
-              <span className="text-xs font-medium text-slate-400 mt-2">Step 4</span>
-            </div>
-            <div className="w-12 h-[2px] bg-slate-200 mb-6 mx-2"></div>
-
-            {/* Step 5 */}
-            <div className="flex flex-col items-center opacity-50">
-              <div className="w-10 h-10 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center text-slate-400 font-bold">
-                5
-              </div>
-              <span className="text-xs font-medium text-slate-400 mt-2">Step 5</span>
-            </div>
+            {[1, 2, 3, 4, 5].map((step, index) => (
+              <React.Fragment key={step}>
+                <div className={`flex flex-col items-center ${currentStep < step ? 'opacity-50' : ''}`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-all duration-300 ${
+                    currentStep > step 
+                      ? 'bg-gradient-to-r from-pink-400 to-blue-400 text-white' 
+                      : currentStep === step 
+                        ? 'bg-gradient-to-r from-purple-300 to-blue-300 text-white'
+                        : 'bg-white border-2 border-slate-200 text-slate-400'
+                  }`}>
+                    {currentStep > step ? <Check className="w-6 h-6" /> : step}
+                  </div>
+                  <span className={`text-xs mt-2 transition-colors duration-300 ${
+                    currentStep > step ? 'text-pink-500 font-bold' : currentStep === step ? 'text-purple-500 font-bold' : 'text-slate-400 font-medium'
+                  }`}>
+                    Step {step}
+                  </span>
+                </div>
+                {index < 4 && (
+                  <div className={`w-12 h-[2px] mb-6 mx-2 transition-colors duration-300 ${
+                    currentStep > step ? 'bg-gradient-to-r from-pink-400 to-blue-300' : 'bg-slate-200'
+                  }`}></div>
+                )}
+              </React.Fragment>
+            ))}
           </div>
         </div>
 
@@ -253,7 +250,7 @@ function Split() {
                 {totalTagihan > 0 && jumlahOrang > 1 ? (
                   <button 
                     type="button"
-                    onClick={() => setCurrentStep(2)}
+                    onClick={handleLanjutStep1}
                     className="w-full block text-center bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-4 rounded-xl hover:opacity-90 transition shadow-md"
                   >
                     Lanjut
@@ -283,27 +280,36 @@ function Split() {
             </div>
 
             <div className="space-y-6">
-              {/* Dynamic inputs based on jumlahOrang */}
-              {Array.from({ length: Math.max(2, Number(jumlahOrang) || 2) }).map((_, index) => (
-                <div key={index} className="flex items-center gap-4">
-                  <div className="bg-gradient-to-br from-purple-200 to-blue-200 w-12 h-12 rounded-full flex items-center justify-center shrink-0">
-                    <User className="text-white w-6 h-6" />
+              {participants.map((p, index) => (
+                <div key={p.id} className="flex items-center gap-4">
+                  {/* Ikon Avatar - Soft gradient jika kosong, Bright gradient jika terisi */}
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                    p.name.trim() !== '' 
+                      ? 'bg-gradient-to-br from-pink-400 to-blue-400 shadow-md' 
+                      : 'bg-gradient-to-br from-purple-200 to-blue-200'
+                  }`}>
+                    <User className="w-6 h-6 text-white" />
                   </div>
+                  
                   <div className="flex-grow">
                     <label className="text-xs font-bold text-slate-500 block mb-1">Orang {index + 1}</label>
                     <input 
                       type="text" 
                       placeholder={`Nama orang ${index + 1}`} 
-                      value={peserta[index] || ''}
-                      onChange={(e) => handlePesertaChange(index, e.target.value)}
+                      value={p.name}
+                      onChange={(e) => {
+                        const newParticipants = [...participants];
+                        newParticipants[index].name = e.target.value;
+                        setParticipants(newParticipants);
+                      }}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
                     />
                   </div>
-                  {Math.max(2, Number(jumlahOrang) || 2) > 2 ? (
+                  {Number(jumlahOrang) > 2 ? (
                     <button 
                       type="button"
-                      onClick={() => removePeserta(index)}
-                      className="text-red-400 hover:text-red-600 transition p-2 mt-4" 
+                      onClick={() => removeParticipant(index)}
+                      className="text-red-400 hover:text-red-600 transition p-2 mt-4"
                       title="Hapus peserta ini"
                     >
                       <X className="w-5 h-5" />
@@ -316,18 +322,88 @@ function Split() {
 
               {/* Summary Box */}
               <div className="bg-slate-50 rounded-xl p-4 text-center mt-8 border border-slate-100">
-                <p className="text-sm font-medium text-slate-600">Total: {peserta.filter(p => p && p.trim() !== '').length} dari {Math.max(2, Number(jumlahOrang) || 2)} orang sudah diisi</p>
+                <p className="text-sm font-medium text-slate-600">
+                  Total: {filledCount} dari {jumlahOrang} orang sudah diisi
+                </p>
               </div>
 
               {/* Tombol Lanjut */}
               <div className="pt-4">
                 <button 
                   type="button"
-                  className="w-full bg-gradient-to-r from-pink-300 to-blue-300 text-white font-bold py-4 rounded-xl hover:opacity-90 transition shadow-md"
+                  disabled={!isAllFilled}
+                  onClick={() => setCurrentStep(3)}
+                  className={`w-full font-bold py-4 rounded-xl transition shadow-md ${
+                    isAllFilled 
+                      ? 'bg-gradient-to-r from-pink-400 to-blue-400 text-white hover:opacity-90' 
+                      : 'bg-gradient-to-r from-pink-300 to-blue-300 opacity-60 text-white cursor-not-allowed'
+                  }`}
                 >
                   Lanjut ke Pembagian
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3: PILIH METODE */}
+        {currentStep === 3 && (
+          <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-pink-500 mb-2">
+                Pilih Metode Pembagian
+              </h1>
+              <p className="text-slate-500">Bagaimana Anda ingin membagi tagihan?</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
+              {/* Card: Split Sama Rata */}
+              <div 
+                onClick={() => setSplitMethod('rata')}
+                className={`relative p-8 rounded-2xl cursor-pointer transition-all duration-300 border-2 ${
+                  splitMethod === 'rata' 
+                    ? 'border-pink-300 bg-gradient-to-br from-pink-50 to-blue-50 shadow-md' 
+                    : 'border-slate-100 hover:border-pink-200 bg-white'
+                }`}
+              >
+                {splitMethod === 'rata' && (
+                  <CheckCircle2 className="absolute top-4 right-4 w-6 h-6 text-purple-400 fill-purple-100" />
+                )}
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-pink-300 to-blue-300 flex items-center justify-center mb-6 shadow-inner">
+                  <SplitIcon className="text-white w-8 h-8" />
+                </div>
+                <h3 className="font-bold text-xl text-slate-800 mb-2">Split Sama Rata</h3>
+                <p className="text-sm text-slate-500">Bagi tagihan secara merata untuk semua orang</p>
+              </div>
+
+              {/* Card: Custom Split */}
+              <div 
+                onClick={() => setSplitMethod('custom')}
+                className={`relative p-8 rounded-2xl cursor-pointer transition-all duration-300 border-2 ${
+                  splitMethod === 'custom' 
+                    ? 'border-pink-300 bg-gradient-to-br from-pink-50 to-blue-50 shadow-md' 
+                    : 'border-slate-100 hover:border-pink-200 bg-white'
+                }`}
+              >
+                {splitMethod === 'custom' && (
+                  <CheckCircle2 className="absolute top-4 right-4 w-6 h-6 text-purple-400 fill-purple-100" />
+                )}
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-purple-300 to-pink-300 flex items-center justify-center mb-6 shadow-inner">
+                  <PenLine className="text-white w-8 h-8" />
+                </div>
+                <h3 className="font-bold text-xl text-slate-800 mb-2">Custom Split</h3>
+                <p className="text-sm text-slate-500">Atur pembagian sesuai kebutuhan masing-masing orang</p>
+              </div>
+            </div>
+
+            {/* Tombol Lanjut */}
+            <div>
+              <button 
+                onClick={() => setCurrentStep(4)}
+                className="w-full bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-4 rounded-xl hover:opacity-90 transition shadow-md"
+              >
+                Lanjut
+              </button>
             </div>
           </div>
         )}
