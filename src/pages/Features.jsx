@@ -34,7 +34,7 @@ function Features() {
       {/* MAIN CONTENT */}
       <main className="flex-grow px-8 py-12 max-w-7xl mx-auto w-full">
         <div className="text-center mb-16 max-w-2xl mx-auto">
-          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500 mb-4">
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500 mb-4 pb-2">
             Fitur-Fitur Unggulan
           </h1>
           <p className="text-slate-500">

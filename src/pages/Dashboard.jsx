@@ -29,7 +29,7 @@ function Dashboard() {
             {/* MAIN CONTENT */}
             <main className="flex-grow flex flex-col items-center justify-center px-8 py-12 max-w-5xl mx-auto w-full">
                 <div className="text-center mb-14">
-                    <h1 className="text-4xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-400 to-blue-500 inline-block">
+                    <h1 className="text-4xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-400 to-blue-500 inline-block pb-2">
                         Ready to split your bill?
                     </h1>
                     <p className="text-slate-500 text-lg">Pilih salah satu opsi di bawah untuk memulai</p>

@@ -17,7 +17,24 @@ import {
 
 function Split() {
   const [totalTagihan, setTotalTagihan] = useState('');
+  const [jumlahOrang, setJumlahOrang] = useState('');
+  const [peserta, setPeserta] = useState([]);
   const [currentStep, setCurrentStep] = useState(1);
+
+  const handlePesertaChange = (index, value) => {
+    const newPeserta = [...peserta];
+    newPeserta[index] = value;
+    setPeserta(newPeserta);
+  };
+
+  const removePeserta = (indexToRemove) => {
+    const currentCount = Math.max(2, Number(jumlahOrang) || 2);
+    if (currentCount <= 2) return; // minimal 2 orang tidak bisa dihapus lagi
+
+    setJumlahOrang(currentCount - 1);
+    const newPeserta = peserta.filter((_, index) => index !== indexToRemove);
+    setPeserta(newPeserta);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12">
@@ -127,7 +144,10 @@ function Split() {
                 </label>
                 <input 
                   type="number" 
+                  min="2"
                   placeholder="2" 
+                  value={jumlahOrang}
+                  onChange={(e) => setJumlahOrang(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
                 />
               </div>
@@ -228,9 +248,9 @@ function Split() {
                 </div>
               )}
 
-              {/* Tombol Lanjut (Aktif bersinar jika totalTagihan > 0, redup jika kosong) */}
-              <div className={totalTagihan > 0 ? "pt-2" : "pt-8"}>
-                {totalTagihan > 0 ? (
+              {/* Tombol Lanjut (Aktif bersinar jika totalTagihan > 0 dan jumlahOrang > 1, redup jika tidak) */}
+              <div className={totalTagihan > 0 && jumlahOrang > 1 ? "pt-2" : "pt-8"}>
+                {totalTagihan > 0 && jumlahOrang > 1 ? (
                   <button 
                     type="button"
                     onClick={() => setCurrentStep(2)}
@@ -259,49 +279,44 @@ function Split() {
               <h1 className="text-3xl font-bold text-pink-500 mb-2">
                 Input Peserta
               </h1>
-              <p className="text-slate-500">Masukkan nama 2 orang yang akan membagi tagihan</p>
+              <p className="text-slate-500">Masukkan nama {Math.max(2, Number(jumlahOrang) || 2)} orang yang akan membagi tagihan</p>
             </div>
 
             <div className="space-y-6">
-              {/* Orang 1 */}
-              <div className="flex items-center gap-4">
-                <div className="bg-gradient-to-br from-purple-200 to-blue-200 w-12 h-12 rounded-full flex items-center justify-center shrink-0">
-                  <User className="text-white w-6 h-6" />
+              {/* Dynamic inputs based on jumlahOrang */}
+              {Array.from({ length: Math.max(2, Number(jumlahOrang) || 2) }).map((_, index) => (
+                <div key={index} className="flex items-center gap-4">
+                  <div className="bg-gradient-to-br from-purple-200 to-blue-200 w-12 h-12 rounded-full flex items-center justify-center shrink-0">
+                    <User className="text-white w-6 h-6" />
+                  </div>
+                  <div className="flex-grow">
+                    <label className="text-xs font-bold text-slate-500 block mb-1">Orang {index + 1}</label>
+                    <input 
+                      type="text" 
+                      placeholder={`Nama orang ${index + 1}`} 
+                      value={peserta[index] || ''}
+                      onChange={(e) => handlePesertaChange(index, e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
+                    />
+                  </div>
+                  {Math.max(2, Number(jumlahOrang) || 2) > 2 ? (
+                    <button 
+                      type="button"
+                      onClick={() => removePeserta(index)}
+                      className="text-red-400 hover:text-red-600 transition p-2 mt-4" 
+                      title="Hapus peserta ini"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  ) : (
+                    <div className="w-9 mt-4"></div> /* Placeholder to keep alignment */
+                  )}
                 </div>
-                <div className="flex-grow">
-                  <label className="text-xs font-bold text-slate-500 block mb-1">Orang 1</label>
-                  <input 
-                    type="text" 
-                    placeholder="Nama orang 1" 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
-                  />
-                </div>
-                <button className="text-red-400 hover:text-red-600 transition p-2 mt-4">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Orang 2 */}
-              <div className="flex items-center gap-4">
-                <div className="bg-gradient-to-br from-purple-200 to-blue-200 w-12 h-12 rounded-full flex items-center justify-center shrink-0">
-                  <User className="text-white w-6 h-6" />
-                </div>
-                <div className="flex-grow">
-                  <label className="text-xs font-bold text-slate-500 block mb-1">Orang 2</label>
-                  <input 
-                    type="text" 
-                    placeholder="Nama orang 2" 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
-                  />
-                </div>
-                <button className="text-red-400 hover:text-red-600 transition p-2 mt-4">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+              ))}
 
               {/* Summary Box */}
               <div className="bg-slate-50 rounded-xl p-4 text-center mt-8 border border-slate-100">
-                <p className="text-sm font-medium text-slate-600">Total: 0 dari 2 orang sudah diisi</p>
+                <p className="text-sm font-medium text-slate-600">Total: {peserta.filter(p => p && p.trim() !== '').length} dari {Math.max(2, Number(jumlahOrang) || 2)} orang sudah diisi</p>
               </div>
 
               {/* Tombol Lanjut */}
