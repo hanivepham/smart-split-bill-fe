@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Calculator, 
@@ -18,10 +18,16 @@ import {
   CheckCircle2,
   Info,
   AlertTriangle,
-  Plus
+  Plus,
+  Share2,
+  Save,
+  RotateCcw,
+  CheckCircle
 } from 'lucide-react';
 
 function Split() {
+  const navigate = useNavigate();
+  
   const [totalTagihan, setTotalTagihan] = useState('');
   const [jumlahOrang, setJumlahOrang] = useState(2);
   const [participants, setParticipants] = useState([]);
@@ -88,6 +94,37 @@ function Split() {
 
   const filledCount = participants.filter(p => p.name.trim() !== '').length;
   const isAllFilled = filledCount > 0 && filledCount === Number(jumlahOrang);
+
+  const handleShare = () => {
+    const perPerson = Number(totalTagihan) / participants.length;
+    const text = `📊 Hasil Pembagian Tagihan\n\nGrand Total: Rp ${new Intl.NumberFormat('id-ID').format(totalTagihan)}\n\n${participants.map((p, i) => `${p.name || `Orang ${i+1}`}: Rp ${new Intl.NumberFormat('id-ID').format(perPerson)}`).join('\n')}\n\n💡 Dibuat dengan Smart Bill Splitter`;
+    navigator.clipboard.writeText(text);
+    alert('Hasil berhasil disalin ke clipboard!');
+  };
+
+  const handleSimpan = () => {
+    const perPerson = Number(totalTagihan) / participants.length;
+    const newRecord = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
+      time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+      total: totalTagihan,
+      peopleCount: participants.length,
+      method: 'Split Rata',
+      details: participants.map((p, i) => ({ name: p.name || `Orang ${i+1}`, amount: perPerson }))
+    };
+    const existing = JSON.parse(localStorage.getItem('splitHistory') || '[]');
+    localStorage.setItem('splitHistory', JSON.stringify([newRecord, ...existing]));
+    alert('Berhasil disimpan ke riwayat!');
+  };
+
+  const handleReset = () => {
+    setTotalTagihan('');
+    setJumlahOrang(2);
+    setParticipants([]);
+    setSplitMethod('rata');
+    setCurrentStep(1);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12">
@@ -637,6 +674,66 @@ function Split() {
                 }`}
               >
                 Lanjut ke Ringkasan
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 5: RINGKASAN SELESAI */}
+        {currentStep === 5 && (
+          <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100 text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-300 to-blue-300 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md">
+              <CheckCircle className="text-white w-10 h-10" />
+            </div>
+            <h1 className="text-3xl font-bold text-purple-500 mb-2">Pembagian Selesai!</h1>
+            <p className="text-slate-500 mb-8">Berikut adalah ringkasan pembagian tagihan</p>
+
+            <div className="bg-slate-50 rounded-2xl p-6 text-left border border-slate-100 mb-6">
+              <h3 className="font-bold text-slate-800 mb-4">Total Tagihan</h3>
+              <div className="flex justify-between text-sm text-slate-500 mb-4">
+                <span>Subtotal Makanan</span>
+                <span>Rp {new Intl.NumberFormat('id-ID').format(totalTagihan)}</span>
+              </div>
+              <div className="border-t border-slate-200 pt-4 flex justify-between items-center font-bold">
+                <span className="text-slate-800">Grand Total</span>
+                <span className="text-xl text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(totalTagihan)}</span>
+              </div>
+            </div>
+
+            <div className="text-left mb-8">
+              <h3 className="font-bold text-slate-800 mb-4">Rincian Per Orang</h3>
+              <div className="space-y-4">
+                {participants.map((p, i) => {
+                  const perPerson = Number(totalTagihan) / participants.length;
+                  return (
+                    <div key={p.id} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
+                      <div className="flex justify-between font-bold mb-4">
+                        <span className="text-slate-800">{p.name || `Orang ${i+1}`}</span>
+                        <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-slate-500 mb-4">
+                        <span>Subtotal Makanan</span>
+                        <span>Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                      </div>
+                      <div className="border-t border-slate-100 pt-4 flex justify-between items-center text-xs font-bold">
+                        <span className="text-slate-600">Total Bayar</span>
+                        <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <button onClick={handleShare} className="flex items-center justify-center gap-2 border-2 border-blue-200 text-blue-500 font-bold py-3 rounded-xl hover:bg-blue-50 transition">
+                <Share2 className="w-5 h-5" /> Share
+              </button>
+              <button onClick={handleSimpan} className="flex items-center justify-center gap-2 border-2 border-green-200 text-green-500 font-bold py-3 rounded-xl hover:bg-green-50 transition">
+                <Save className="w-5 h-5" /> Simpan
+              </button>
+              <button onClick={handleReset} className="flex items-center justify-center gap-2 bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-3 rounded-xl hover:opacity-90 transition shadow-md">
+                <RotateCcw className="w-5 h-5" /> Buat Lagi
               </button>
             </div>
           </div>

@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Features from './pages/Features';
 import Dashboard from './pages/Dashboard';
 import Split from './pages/Split';
+import History from './pages/History';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/features" element={<Features />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/split" element={<Split />} />
+        <Route path="/history" element={<History />} />
       </Routes>
     </BrowserRouter>
   );
