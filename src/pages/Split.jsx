@@ -15,7 +15,10 @@ import {
   X,
   Split as SplitIcon,
   PenLine,
-  CheckCircle2
+  CheckCircle2,
+  Info,
+  AlertTriangle,
+  Plus
 } from 'lucide-react';
 
 function Split() {
@@ -31,7 +34,8 @@ function Split() {
       if (participants.length !== Number(jumlahOrang)) {
         const newParticipants = Array.from({ length: Number(jumlahOrang) }, (_, i) => ({
           id: i + 1,
-          name: ''
+          name: '',
+          items: [{ menu: '', price: '' }]
         }));
         setParticipants(newParticipants);
       }
@@ -47,6 +51,40 @@ function Split() {
     const newParticipants = participants.filter((_, index) => index !== indexToRemove);
     setParticipants(newParticipants);
   };
+
+  // Handler untuk form menu
+  const handleAddItem = (pIndex) => {
+    const newParticipants = [...participants];
+    if (!newParticipants[pIndex].items) newParticipants[pIndex].items = [{ menu: '', price: '' }];
+    newParticipants[pIndex].items.push({ menu: '', price: '' });
+    setParticipants(newParticipants);
+  };
+
+  const handleRemoveItem = (pIndex, itemIndex) => {
+    const newParticipants = [...participants];
+    newParticipants[pIndex].items.splice(itemIndex, 1);
+    setParticipants(newParticipants);
+  };
+
+  const handleItemChange = (pIndex, itemIndex, field, value) => {
+    const newParticipants = [...participants];
+    if (!newParticipants[pIndex].items) newParticipants[pIndex].items = [{ menu: '', price: '' }];
+    newParticipants[pIndex].items[itemIndex][field] = value;
+    setParticipants(newParticipants);
+  };
+
+  // Kalkulasi Custom Split
+  const getParticipantSubtotal = (p) => {
+    return p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
+  };
+
+  const totalCustomSubtotal = participants.reduce((sum, p) => sum + getParticipantSubtotal(p), 0);
+  const isSubtotalMatch = totalCustomSubtotal === Number(totalTagihan);
+
+  // Validasi: Semua item harus ada nama menu dan harga, dan subtotal harus match
+  const isCustomValid = isSubtotalMatch && participants.every(p => 
+    p.items && p.items.length > 0 && p.items.every(item => item.menu.trim() !== '' && Number(item.price) > 0)
+  );
 
   const filledCount = participants.filter(p => p.name.trim() !== '').length;
   const isAllFilled = filledCount > 0 && filledCount === Number(jumlahOrang);
@@ -403,6 +441,202 @@ function Split() {
                 className="w-full bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-4 rounded-xl hover:opacity-90 transition shadow-md"
               >
                 Lanjut
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: PREVIEW SPLIT SAMA RATA */}
+        {currentStep === 4 && splitMethod === 'rata' && (
+          <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-pink-500 mb-2">
+                Preview Split Sama Rata
+              </h1>
+              <p className="text-slate-500">Setiap orang akan membayar jumlah yang sama</p>
+            </div>
+
+            {/* Info Box */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3 mb-8">
+              <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+              <p className="text-sm text-blue-700">
+                <span className="font-bold">Pembagian Otomatis: </span> 
+                Semua biaya (diskon, ongkir, service, packaging) dibagi rata untuk semua orang
+              </p>
+            </div>
+
+            {/* List Peserta */}
+            <div className="space-y-4 mb-8">
+              {participants.map((p, index) => {
+                // Hitung pembagian rata
+                const perPerson = Number(totalTagihan) / participants.length;
+                
+                return (
+                  <div key={p.id} className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <h3 className="font-bold text-slate-800 mb-4">{p.name || `Orang ${index + 1}`}</h3>
+                    <div className="flex justify-between text-sm text-slate-500 mb-4">
+                      <span>Subtotal Makanan</span>
+                      <span>Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                    </div>
+                    <div className="border-t border-slate-200 pt-4 flex justify-between items-center font-bold">
+                      <span className="text-slate-800">Total Bayar</span>
+                      <span className="text-lg bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500">
+                        Rp {new Intl.NumberFormat('id-ID').format(perPerson)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Summary Box */}
+            <div className="border-2 border-pink-100 rounded-2xl p-6 mb-8">
+              <h3 className="font-bold text-slate-800 mb-4">Summary</h3>
+              <div className="flex justify-between text-sm text-slate-500 mb-2">
+                <span>Grand Total</span>
+                <span>Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan))}</span>
+              </div>
+              <div className="flex justify-between text-sm text-slate-500 mb-4">
+                <span>Jumlah Orang</span>
+                <span>{participants.length}</span>
+              </div>
+              <div className="border-t border-slate-200 pt-4 flex justify-between items-center font-bold">
+                <span className="text-slate-800">Per Person</span>
+                <span className="text-xl bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500">
+                  Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) / participants.length)}
+                </span>
+              </div>
+            </div>
+
+            {/* Tombol Lanjut ke Ringkasan */}
+            <div>
+              <button 
+                onClick={() => setCurrentStep(5)}
+                className="w-full bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-4 rounded-xl hover:opacity-90 transition shadow-md"
+              >
+                Lanjut ke Ringkasan
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: PREVIEW CUSTOM SPLIT */}
+        {currentStep === 4 && splitMethod === 'custom' && (
+          <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-pink-500 mb-2">Custom Split</h1>
+              <p className="text-slate-500">Masukkan detail pembelian untuk setiap orang (harga makanan saja)</p>
+            </div>
+
+            {/* Info Box */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3 mb-8">
+              <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+              <p className="text-sm text-blue-700">
+                <span className="font-bold">Pembagian Otomatis Berdasarkan Porsi: </span> 
+                Diskon, ongkir, service, dan packaging akan dibagi proporsional sesuai porsi makanan masing-masing orang
+              </p>
+            </div>
+
+            {/* List Peserta & Form Menu */}
+            <div className="space-y-6 mb-8">
+              {participants.map((p, pIndex) => {
+                const pSubtotal = getParticipantSubtotal(p);
+                const porsi = totalCustomSubtotal > 0 ? ((pSubtotal / totalCustomSubtotal) * 100).toFixed(1) : 0;
+                const items = p.items || [{ menu: '', price: '' }];
+
+                return (
+                  <div key={p.id} className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <h3 className="font-bold text-slate-800 mb-4">{p.name || `Orang ${pIndex + 1}`}</h3>
+                    
+                    {/* Form Items */}
+                    <div className="space-y-3 mb-4">
+                      {items.map((item, itemIndex) => (
+                        <div key={itemIndex} className="flex gap-3 items-center">
+                          <input 
+                            type="text" 
+                            placeholder="Nama menu" 
+                            value={item.menu}
+                            onChange={(e) => handleItemChange(pIndex, itemIndex, 'menu', e.target.value)}
+                            className="flex-grow bg-white border border-pink-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-300 transition text-sm"
+                          />
+                          <div className="flex items-center bg-white border border-blue-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-300 transition">
+                            <span className="px-3 text-slate-400 text-sm border-r border-blue-100">Rp</span>
+                            <input 
+                              type="number" 
+                              placeholder="Harga" 
+                              value={item.price}
+                              onChange={(e) => handleItemChange(pIndex, itemIndex, 'price', e.target.value)}
+                              className="w-24 px-3 py-2 focus:outline-none text-sm"
+                            />
+                          </div>
+                          {items.length > 1 && (
+                            <button onClick={() => handleRemoveItem(pIndex, itemIndex)} className="text-red-400 hover:text-red-600 p-1 transition">
+                              <X className="w-5 h-5" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    <button 
+                      onClick={() => handleAddItem(pIndex)}
+                      className="w-full py-2 mb-6 border-2 border-dashed border-pink-200 text-pink-400 rounded-xl font-medium text-sm hover:bg-pink-50 hover:border-pink-300 transition flex items-center justify-center gap-2"
+                    >
+                      <Plus className="w-4 h-4" /> Tambah Item
+                    </button>
+
+                    {/* Kalkulasi Per Orang */}
+                    <div className="text-xs text-slate-400 mb-2">Porsi: {porsi}%</div>
+                    <div className="flex justify-between text-sm text-slate-500 mb-2">
+                      <span>Subtotal Makanan</span>
+                      <span>Rp {new Intl.NumberFormat('id-ID').format(pSubtotal)}</span>
+                    </div>
+                    <div className="border-t border-slate-200 pt-3 flex justify-between items-center font-bold">
+                      <span className="text-slate-800 text-sm">Total Bayar</span>
+                      <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(pSubtotal)}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Overall Summary */}
+            <div className="border-2 border-pink-100 rounded-2xl p-6 mb-8">
+              <h3 className="font-bold text-slate-800 mb-4">Overall Summary</h3>
+              <div className="flex justify-between text-sm text-slate-500 mb-4">
+                <span>Total Subtotal Makanan</span>
+                <span>Rp {new Intl.NumberFormat('id-ID').format(totalCustomSubtotal)}</span>
+              </div>
+              <div className="border-t border-slate-200 pt-4 flex justify-between items-center font-bold mb-4">
+                <span className="text-slate-800">Grand Total</span>
+                <span className="text-xl bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500">
+                  Rp {new Intl.NumberFormat('id-ID').format(totalCustomSubtotal)}
+                </span>
+              </div>
+
+              {/* Warning Box jika tidak match */}
+              {!isSubtotalMatch && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
+                  <p className="text-xs text-yellow-700">
+                    Total subtotal makanan tidak sesuai dengan tagihan awal. Expected: Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan))}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Tombol Lanjut (Validasi) */}
+            <div>
+              <button 
+                onClick={() => setCurrentStep(5)}
+                disabled={!isCustomValid}
+                className={`w-full font-bold py-4 rounded-xl transition shadow-md ${
+                  isCustomValid 
+                    ? 'bg-gradient-to-r from-pink-400 to-blue-400 text-white hover:opacity-90' 
+                    : 'bg-gradient-to-r from-pink-300 to-blue-300 opacity-60 text-white cursor-not-allowed'
+                }`}
+              >
+                Lanjut ke Ringkasan
               </button>
             </div>
           </div>
