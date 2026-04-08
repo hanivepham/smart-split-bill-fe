@@ -96,22 +96,39 @@ function Split() {
   const isAllFilled = filledCount > 0 && filledCount === Number(jumlahOrang);
 
   const handleShare = () => {
-    const perPerson = Number(totalTagihan) / participants.length;
-    const text = `📊 Hasil Pembagian Tagihan\n\nGrand Total: Rp ${new Intl.NumberFormat('id-ID').format(totalTagihan)}\n\n${participants.map((p, i) => `${p.name || `Orang ${i+1}`}: Rp ${new Intl.NumberFormat('id-ID').format(perPerson)}`).join('\n')}\n\n💡 Dibuat dengan Smart Bill Splitter`;
+    let text = `📊 Hasil Pembagian Tagihan\n\nGrand Total: Rp ${new Intl.NumberFormat('id-ID').format(totalTagihan)}\n\n`;
+    participants.forEach((p, i) => {
+      const name = p.name || `Orang ${i+1}`;
+      if (splitMethod === 'rata') {
+        const perPerson = Number(totalTagihan) / participants.length;
+        text += `${name}: Rp ${new Intl.NumberFormat('id-ID').format(perPerson)}\n`;
+      } else {
+        const personTotal = p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
+        text += `${name}: Rp ${new Intl.NumberFormat('id-ID').format(personTotal)}\n`;
+      }
+    });
+    text += `\n💡 Dibuat dengan Smart Bill Splitter`;
     navigator.clipboard.writeText(text);
     alert('Hasil berhasil disalin ke clipboard!');
   };
 
   const handleSimpan = () => {
-    const perPerson = Number(totalTagihan) / participants.length;
     const newRecord = {
       id: Date.now(),
       date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
       time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
       total: totalTagihan,
       peopleCount: participants.length,
-      method: 'Split Rata',
-      details: participants.map((p, i) => ({ name: p.name || `Orang ${i+1}`, amount: perPerson }))
+      method: splitMethod === 'rata' ? 'Split Rata' : 'Custom Split',
+      details: participants.map((p, i) => {
+        const name = p.name || `Orang ${i+1}`;
+        if (splitMethod === 'rata') {
+          return { name, amount: Number(totalTagihan) / participants.length };
+        } else {
+          const amount = p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
+          return { name, amount };
+        }
+      })
     };
     const existing = JSON.parse(localStorage.getItem('splitHistory') || '[]');
     localStorage.setItem('splitHistory', JSON.stringify([newRecord, ...existing]));
@@ -701,26 +718,67 @@ function Split() {
             </div>
 
             <div className="text-left mb-8">
-              <h3 className="font-bold text-slate-800 mb-4">Rincian Per Orang</h3>
+              <div className="flex items-baseline gap-2 mb-4">
+                <h3 className="font-bold text-slate-800">Rincian Per Orang</h3>
+                {splitMethod === 'custom' && <span className="text-xs text-slate-500">(Pembagian Berdasarkan Porsi)</span>}
+              </div>
+              
               <div className="space-y-4">
                 {participants.map((p, i) => {
-                  const perPerson = Number(totalTagihan) / participants.length;
-                  return (
-                    <div key={p.id} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
-                      <div className="flex justify-between font-bold mb-4">
-                        <span className="text-slate-800">{p.name || `Orang ${i+1}`}</span>
-                        <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                  if (splitMethod === 'rata') {
+                    const perPerson = Number(totalTagihan) / participants.length;
+                    return (
+                      <div key={p.id} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
+                        <div className="flex justify-between font-bold mb-4">
+                          <span className="text-slate-800">{p.name || `Orang ${i+1}`}</span>
+                          <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm text-slate-500 mb-4">
+                          <span>Subtotal Makanan</span>
+                          <span>Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                        </div>
+                        <div className="border-t border-slate-100 pt-4 flex justify-between items-center text-xs font-bold">
+                          <span className="text-slate-600">Total Bayar</span>
+                          <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                        </div>
                       </div>
-                      <div className="flex justify-between text-sm text-slate-500 mb-4">
-                        <span>Subtotal Makanan</span>
-                        <span>Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                    );
+                  } else {
+                    // CUSTOM SPLIT RENDER
+                    const personTotal = p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
+                    const porsi = totalTagihan > 0 ? ((personTotal / totalTagihan) * 100).toFixed(1) : 0;
+
+                    return (
+                      <div key={p.id} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
+                        <div className="flex justify-between font-bold mb-1">
+                          <span className="text-slate-800">{p.name || `Orang ${i+1}`}</span>
+                          <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(personTotal)}</span>
+                        </div>
+                        <div className="text-xs text-slate-400 mb-4">Porsi: {porsi}%</div>
+
+                        {p.items && p.items.length > 0 && (
+                          <div className="mb-4">
+                            <p className="text-xs font-bold text-slate-500 mb-2">Items:</p>
+                            {p.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between text-sm text-slate-600 mb-1">
+                                <span>{item.menu || 'Item'}</span>
+                                <span>Rp {new Intl.NumberFormat('id-ID').format(item.price || 0)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex justify-between text-sm text-slate-500 mb-4 border-t border-slate-100 pt-4">
+                          <span>Subtotal Makanan</span>
+                          <span>Rp {new Intl.NumberFormat('id-ID').format(personTotal)}</span>
+                        </div>
+                        <div className="border-t border-slate-100 pt-4 flex justify-between items-center text-xs font-bold">
+                          <span className="text-slate-800">Total Bayar</span>
+                          <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(personTotal)}</span>
+                        </div>
                       </div>
-                      <div className="border-t border-slate-100 pt-4 flex justify-between items-center text-xs font-bold">
-                        <span className="text-slate-600">Total Bayar</span>
-                        <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
-                      </div>
-                    </div>
-                  );
+                    );
+                  }
                 })}
               </div>
             </div>
