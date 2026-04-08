@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Calculator, 
@@ -26,7 +26,6 @@ import {
 } from 'lucide-react';
 
 function Split() {
-  const navigate = useNavigate();
   
   const [totalTagihan, setTotalTagihan] = useState('');
   const [jumlahOrang, setJumlahOrang] = useState(2);
@@ -85,7 +84,7 @@ function Split() {
   };
 
   const totalCustomSubtotal = participants.reduce((sum, p) => sum + getParticipantSubtotal(p), 0);
-  const isSubtotalMatch = totalCustomSubtotal === Number(totalTagihan);
+  const isSubtotalMatch = totalCustomSubtotal === (Number(totalTagihan) || 0);
 
   // Validasi: Semua item harus ada nama menu dan harga, dan subtotal harus match
   const isCustomValid = isSubtotalMatch && participants.every(p => 
@@ -96,15 +95,15 @@ function Split() {
   const isAllFilled = filledCount > 0 && filledCount === Number(jumlahOrang);
 
   const handleShare = () => {
-    let text = `📊 Hasil Pembagian Tagihan\n\nGrand Total: Rp ${new Intl.NumberFormat('id-ID').format(totalTagihan)}\n\n`;
+    let text = `📊 Hasil Pembagian Tagihan\n\nGrand Total: Rp ${new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}\n\n`;
     participants.forEach((p, i) => {
       const name = p.name || `Orang ${i+1}`;
       if (splitMethod === 'rata') {
-        const perPerson = Number(totalTagihan) / participants.length;
-        text += `${name}: Rp ${new Intl.NumberFormat('id-ID').format(perPerson)}\n`;
+        const perPerson = (Number(totalTagihan) || 0) / participants.length;
+        text += `${name}: Rp ${new Intl.NumberFormat('id-ID').format(perPerson || 0)}\n`;
       } else {
         const personTotal = p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
-        text += `${name}: Rp ${new Intl.NumberFormat('id-ID').format(personTotal)}\n`;
+        text += `${name}: Rp ${new Intl.NumberFormat('id-ID').format(personTotal || 0)}\n`;
       }
     });
     text += `\n💡 Dibuat dengan Smart Bill Splitter`;
@@ -123,7 +122,7 @@ function Split() {
       details: participants.map((p, i) => {
         const name = p.name || `Orang ${i+1}`;
         if (splitMethod === 'rata') {
-          return { name, amount: Number(totalTagihan) / participants.length };
+          return { name, amount: (Number(totalTagihan) || 0) / participants.length };
         } else {
           const amount = p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
           return { name, amount };
@@ -169,28 +168,30 @@ function Split() {
       <main className="max-w-3xl mx-auto px-6 mt-8">
         
         {/* STEPPER INDICATOR */}
-        <div className="flex items-center justify-center mb-10">
-          <div className="flex items-center">
+        <div className="flex items-center justify-center mb-8 md:mb-10 w-full overflow-hidden px-2">
+          <div className="flex items-center justify-between w-full max-w-sm md:max-w-none md:justify-center">
             {[1, 2, 3, 4, 5].map((step, index) => (
               <React.Fragment key={step}>
                 <div className={`flex flex-col items-center ${currentStep < step ? 'opacity-50' : ''}`}>
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-all duration-300 ${
+                  <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-all duration-300 text-sm md:text-base ${
                     currentStep > step 
                       ? 'bg-gradient-to-r from-pink-400 to-blue-400 text-white' 
                       : currentStep === step 
                         ? 'bg-gradient-to-r from-purple-300 to-blue-300 text-white'
                         : 'bg-white border-2 border-slate-200 text-slate-400'
                   }`}>
-                    {currentStep > step ? <Check className="w-6 h-6" /> : step}
+                    {currentStep > step ? <Check className="w-4 h-4 md:w-6 md:h-6" /> : step}
                   </div>
-                  <span className={`text-xs mt-2 transition-colors duration-300 ${
+                  <span className={`text-[10px] md:text-xs mt-1 md:mt-2 transition-colors duration-300 ${
                     currentStep > step ? 'text-pink-500 font-bold' : currentStep === step ? 'text-purple-500 font-bold' : 'text-slate-400 font-medium'
                   }`}>
                     Step {step}
                   </span>
                 </div>
+                
+                {/* Garis Penghubung */}
                 {index < 4 && (
-                  <div className={`w-12 h-[2px] mb-6 mx-2 transition-colors duration-300 ${
+                  <div className={`w-4 sm:w-8 md:w-12 h-[2px] mb-4 md:mb-6 mx-1 md:mx-2 transition-colors duration-300 ${
                     currentStep > step ? 'bg-gradient-to-r from-pink-400 to-blue-300' : 'bg-slate-200'
                   }`}></div>
                 )}
@@ -327,12 +328,12 @@ function Split() {
                   <h4 className="font-bold text-slate-700 mb-4">Preview Perhitungan</h4>
                   <div className="flex justify-between text-sm text-slate-600 mb-3">
                     <span>Subtotal Makanan</span>
-                    <span>Rp {new Intl.NumberFormat('id-ID').format(totalTagihan)}</span>
+                    <span>Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}</span>
                   </div>
                   <div className="border-t border-pink-100 my-3"></div>
                   <div className="flex justify-between font-bold text-pink-500 text-lg">
                     <span>Grand Total</span>
-                    <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(totalTagihan)}</span>
+                    <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}</span>
                   </div>
                 </div>
               )}
@@ -523,19 +524,19 @@ function Split() {
             <div className="space-y-4 mb-8">
               {participants.map((p, index) => {
                 // Hitung pembagian rata
-                const perPerson = Number(totalTagihan) / participants.length;
+                const perPerson = (Number(totalTagihan) || 0) / participants.length;
                 
                 return (
                   <div key={p.id} className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
                     <h3 className="font-bold text-slate-800 mb-4">{p.name || `Orang ${index + 1}`}</h3>
                     <div className="flex justify-between text-sm text-slate-500 mb-4">
                       <span>Subtotal Makanan</span>
-                      <span>Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                      <span>Rp {new Intl.NumberFormat('id-ID').format(perPerson || 0)}</span>
                     </div>
                     <div className="border-t border-slate-200 pt-4 flex justify-between items-center font-bold">
                       <span className="text-slate-800">Total Bayar</span>
                       <span className="text-lg bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500">
-                        Rp {new Intl.NumberFormat('id-ID').format(perPerson)}
+                        Rp {new Intl.NumberFormat('id-ID').format(perPerson || 0)}
                       </span>
                     </div>
                   </div>
@@ -548,7 +549,7 @@ function Split() {
               <h3 className="font-bold text-slate-800 mb-4">Summary</h3>
               <div className="flex justify-between text-sm text-slate-500 mb-2">
                 <span>Grand Total</span>
-                <span>Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan))}</span>
+                <span>Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}</span>
               </div>
               <div className="flex justify-between text-sm text-slate-500 mb-4">
                 <span>Jumlah Orang</span>
@@ -557,7 +558,7 @@ function Split() {
               <div className="border-t border-slate-200 pt-4 flex justify-between items-center font-bold">
                 <span className="text-slate-800">Per Person</span>
                 <span className="text-xl bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500">
-                  Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) / participants.length)}
+                  Rp {new Intl.NumberFormat('id-ID').format((Number(totalTagihan) || 0) / participants.length)}
                 </span>
               </div>
             </div>
@@ -604,27 +605,27 @@ function Split() {
                     
                     {/* Form Items */}
                     <div className="space-y-3 mb-4">
-                      {items.map((item, itemIndex) => (
-                        <div key={itemIndex} className="flex gap-3 items-center">
+                      {(p.items || []).map((item, itemIndex) => (
+                        <div key={itemIndex} className="flex gap-2 items-center">
                           <input 
                             type="text" 
                             placeholder="Nama menu" 
                             value={item.menu}
                             onChange={(e) => handleItemChange(pIndex, itemIndex, 'menu', e.target.value)}
-                            className="flex-grow bg-white border border-pink-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-300 transition text-sm"
+                            className="w-full min-w-0 bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm md:text-base focus:ring-2 focus:ring-pink-300 outline-none"
                           />
-                          <div className="flex items-center bg-white border border-blue-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-300 transition">
-                            <span className="px-3 text-slate-400 text-sm border-r border-blue-100">Rp</span>
-                            <input 
-                              type="number" 
-                              placeholder="Harga" 
-                              value={item.price}
-                              onChange={(e) => handleItemChange(pIndex, itemIndex, 'price', e.target.value)}
-                              className="w-24 px-3 py-2 focus:outline-none text-sm"
-                            />
-                          </div>
+                          <input 
+                            type="number" 
+                            placeholder="Harga" 
+                            value={item.price}
+                            onChange={(e) => handleItemChange(pIndex, itemIndex, 'price', e.target.value)}
+                            className="w-24 md:w-32 shrink-0 bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm md:text-base focus:ring-2 focus:ring-pink-300 outline-none"
+                          />
                           {items.length > 1 && (
-                            <button onClick={() => handleRemoveItem(pIndex, itemIndex)} className="text-red-400 hover:text-red-600 p-1 transition">
+                            <button 
+                              onClick={() => handleRemoveItem(pIndex, itemIndex)} 
+                              className="shrink-0 text-red-400 hover:text-red-600 p-1 md:p-2"
+                            >
                               <X className="w-5 h-5" />
                             </button>
                           )}
@@ -643,11 +644,11 @@ function Split() {
                     <div className="text-xs text-slate-400 mb-2">Porsi: {porsi}%</div>
                     <div className="flex justify-between text-sm text-slate-500 mb-2">
                       <span>Subtotal Makanan</span>
-                      <span>Rp {new Intl.NumberFormat('id-ID').format(pSubtotal)}</span>
+                      <span>Rp {new Intl.NumberFormat('id-ID').format(pSubtotal || 0)}</span>
                     </div>
                     <div className="border-t border-slate-200 pt-3 flex justify-between items-center font-bold">
                       <span className="text-slate-800 text-sm">Total Bayar</span>
-                      <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(pSubtotal)}</span>
+                      <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(pSubtotal || 0)}</span>
                     </div>
                   </div>
                 );
@@ -659,12 +660,12 @@ function Split() {
               <h3 className="font-bold text-slate-800 mb-4">Overall Summary</h3>
               <div className="flex justify-between text-sm text-slate-500 mb-4">
                 <span>Total Subtotal Makanan</span>
-                <span>Rp {new Intl.NumberFormat('id-ID').format(totalCustomSubtotal)}</span>
+                <span>Rp {new Intl.NumberFormat('id-ID').format(totalCustomSubtotal || 0)}</span>
               </div>
               <div className="border-t border-slate-200 pt-4 flex justify-between items-center font-bold mb-4">
                 <span className="text-slate-800">Grand Total</span>
                 <span className="text-xl bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500">
-                  Rp {new Intl.NumberFormat('id-ID').format(totalCustomSubtotal)}
+                  Rp {new Intl.NumberFormat('id-ID').format(totalCustomSubtotal || 0)}
                 </span>
               </div>
 
@@ -673,7 +674,7 @@ function Split() {
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
                   <p className="text-xs text-yellow-700">
-                    Total subtotal makanan tidak sesuai dengan tagihan awal. Expected: Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan))}
+                    Total subtotal makanan tidak sesuai dengan tagihan awal. Expected: Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}
                   </p>
                 </div>
               )}
@@ -709,11 +710,11 @@ function Split() {
               <h3 className="font-bold text-slate-800 mb-4">Total Tagihan</h3>
               <div className="flex justify-between text-sm text-slate-500 mb-4">
                 <span>Subtotal Makanan</span>
-                <span>Rp {new Intl.NumberFormat('id-ID').format(totalTagihan)}</span>
+                <span>Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}</span>
               </div>
               <div className="border-t border-slate-200 pt-4 flex justify-between items-center font-bold">
                 <span className="text-slate-800">Grand Total</span>
-                <span className="text-xl text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(totalTagihan)}</span>
+                <span className="text-xl text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}</span>
               </div>
             </div>
 
@@ -726,20 +727,20 @@ function Split() {
               <div className="space-y-4">
                 {participants.map((p, i) => {
                   if (splitMethod === 'rata') {
-                    const perPerson = Number(totalTagihan) / participants.length;
+                    const perPerson = (Number(totalTagihan) || 0) / participants.length;
                     return (
                       <div key={p.id} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
                         <div className="flex justify-between font-bold mb-4">
                           <span className="text-slate-800">{p.name || `Orang ${i+1}`}</span>
-                          <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                          <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson || 0)}</span>
                         </div>
                         <div className="flex justify-between text-sm text-slate-500 mb-4">
                           <span>Subtotal Makanan</span>
-                          <span>Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                          <span>Rp {new Intl.NumberFormat('id-ID').format(perPerson || 0)}</span>
                         </div>
                         <div className="border-t border-slate-100 pt-4 flex justify-between items-center text-xs font-bold">
                           <span className="text-slate-600">Total Bayar</span>
-                          <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson)}</span>
+                          <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson || 0)}</span>
                         </div>
                       </div>
                     );
@@ -752,7 +753,7 @@ function Split() {
                       <div key={p.id} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
                         <div className="flex justify-between font-bold mb-1">
                           <span className="text-slate-800">{p.name || `Orang ${i+1}`}</span>
-                          <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(personTotal)}</span>
+                          <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(personTotal || 0)}</span>
                         </div>
                         <div className="text-xs text-slate-400 mb-4">Porsi: {porsi}%</div>
 
@@ -762,7 +763,7 @@ function Split() {
                             {p.items.map((item, idx) => (
                               <div key={idx} className="flex justify-between text-sm text-slate-600 mb-1">
                                 <span>{item.menu || 'Item'}</span>
-                                <span>Rp {new Intl.NumberFormat('id-ID').format(item.price || 0)}</span>
+                                <span>Rp {new Intl.NumberFormat('id-ID').format(Number(item.price) || 0)}</span>
                               </div>
                             ))}
                           </div>
@@ -770,11 +771,11 @@ function Split() {
 
                         <div className="flex justify-between text-sm text-slate-500 mb-4 border-t border-slate-100 pt-4">
                           <span>Subtotal Makanan</span>
-                          <span>Rp {new Intl.NumberFormat('id-ID').format(personTotal)}</span>
+                          <span>Rp {new Intl.NumberFormat('id-ID').format(personTotal || 0)}</span>
                         </div>
                         <div className="border-t border-slate-100 pt-4 flex justify-between items-center text-xs font-bold">
                           <span className="text-slate-800">Total Bayar</span>
-                          <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(personTotal)}</span>
+                          <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(personTotal || 0)}</span>
                         </div>
                       </div>
                     );

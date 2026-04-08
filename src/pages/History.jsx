@@ -7,8 +7,13 @@ function History() {
   const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('splitHistory') || '[]');
-    setHistory(data);
+    try {
+      const data = JSON.parse(localStorage.getItem('splitHistory') || '[]');
+      setHistory(data);
+    } catch (error) {
+      console.error('Failed to parse history:', error);
+      setHistory([]);
+    }
   }, []);
 
   const handleDelete = (id) => {
@@ -91,7 +96,7 @@ function History() {
                   <div className="flex flex-col items-end gap-2 mt-1">
                     {expandedId === item.id ? <ChevronUp className="text-slate-400 w-5 h-5"/> : <ChevronDown className="text-slate-400 w-5 h-5"/>}
                     <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500 mt-2">
-                      Rp {new Intl.NumberFormat('id-ID').format(item.total)}
+                      Rp {new Intl.NumberFormat('id-ID').format(Number(item.total) || 0)}
                     </span>
                   </div>
                 </div>
@@ -102,7 +107,7 @@ function History() {
                       {item.details.map((detail, idx) => (
                         <div key={idx} className="flex justify-between bg-slate-50 p-4 rounded-xl border border-slate-100">
                           <span className="font-bold text-slate-700">{detail.name}</span>
-                          <span className="text-pink-500 font-bold">Rp {new Intl.NumberFormat('id-ID').format(detail.amount)}</span>
+                          <span className="text-pink-500 font-bold">Rp {new Intl.NumberFormat('id-ID').format(Number(detail.amount) || 0)}</span>
                         </div>
                       ))}
                     </div>
