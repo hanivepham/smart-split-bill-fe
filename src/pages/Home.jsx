@@ -1,7 +1,9 @@
-import React from 'react'; import { Link } from 'react-router-dom'; // Tambahin ini
+import React from 'react'; import { Link, useNavigate } from 'react-router-dom'; // Tambahin ini
 import { Calculator, Users, Maximize, Percent, Clock, Share2 } from 'lucide-react';
 
 function Home() {
+    const navigate = useNavigate();
+
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
             {/* NAVBAR */}
@@ -14,14 +16,12 @@ function Home() {
                         Smart Bill Splitter
                     </span>
                 </div>
-                <div className="hidden md:flex gap-8 text-sm font-medium text-slate-500">
-                    <a href="#" className="hover:text-blue-500">Home</a>
-                    <a href="#features" className="hover:text-blue-500">Features</a>
-                    <a href="#" className="hover:text-blue-500">About</a>
-                </div>
-                <Link to="/dashboard" className="bg-gradient-to-r from-pink-400 to-blue-400 text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-md shadow-blue-200">
-                    Start Now
-                </Link>
+                <button
+                    onClick={() => navigate('/login')}
+                    className="px-5 py-2 text-sm md:text-base bg-gradient-to-r from-pink-400 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-bold rounded-full shadow-md transition-all transform hover:-translate-y-0.5"
+                >
+                    Log Out
+                </button>
             </nav>
 
             {/* HERO SECTION */}

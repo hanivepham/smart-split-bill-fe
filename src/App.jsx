@@ -5,6 +5,8 @@ import Features from './pages/Features';
 import Dashboard from './pages/Dashboard';
 import Split from './pages/Split';
 import History from './pages/History';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/split" element={<Split />} />
         <Route path="/history" element={<History />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

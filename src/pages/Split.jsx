@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Calculator, 
@@ -22,10 +22,13 @@ import {
   Share2,
   Save,
   RotateCcw,
-  CheckCircle
+  CheckCircle,
+  Home,
+  Wallet
 } from 'lucide-react';
 
 function Split() {
+  const navigate = useNavigate();
   
   const [totalTagihan, setTotalTagihan] = useState('');
   const [jumlahOrang, setJumlahOrang] = useState(2);
@@ -145,31 +148,31 @@ function Split() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12">
       {/* HEADER */}
-      <header className="flex items-center gap-4 px-8 py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
+      <header className="flex items-center gap-2 md:gap-4 px-4 py-4 md:px-8 md:py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         {currentStep === 1 ? (
-          <Link to="/dashboard" className="p-2 hover:bg-slate-100 rounded-full transition">
+          <Link to="/dashboard" className="p-2 hover:bg-slate-100 rounded-full transition shrink-0">
             <ArrowLeft className="text-slate-600 w-5 h-5" />
           </Link>
         ) : (
-          <button onClick={() => setCurrentStep(currentStep - 1)} className="p-2 hover:bg-slate-100 rounded-full transition">
+          <button onClick={() => setCurrentStep(currentStep - 1)} className="p-2 hover:bg-slate-100 rounded-full transition shrink-0">
             <ArrowLeft className="text-slate-600 w-5 h-5" />
           </button>
         )}
-        <div className="flex items-center gap-2">
-          <div className="bg-gradient-to-r from-pink-400 to-blue-400 p-1.5 rounded-lg">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="bg-gradient-to-r from-pink-400 to-blue-400 p-1.5 rounded-lg shrink-0">
             <Calculator className="text-white w-5 h-5" />
           </div>
-          <span className="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500">
+          <span className="font-bold text-base md:text-lg bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500 truncate min-w-0">
             Smart Bill Splitter
           </span>
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-6 mt-8">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 mt-6 md:mt-8">
         
         {/* STEPPER INDICATOR */}
-        <div className="flex items-center justify-center mb-8 md:mb-10 w-full overflow-hidden px-2">
-          <div className="flex items-center justify-between w-full max-w-sm md:max-w-none md:justify-center">
+        <div className="w-full px-2 max-w-[320px] md:max-w-none mx-auto flex items-center justify-center mb-8 md:mb-10 overflow-hidden">
+          <div className="flex items-center justify-between w-full md:justify-center">
             {[1, 2, 3, 4, 5].map((step, index) => (
               <React.Fragment key={step}>
                 <div className={`flex flex-col items-center ${currentStep < step ? 'opacity-50' : ''}`}>
@@ -202,12 +205,12 @@ function Split() {
 
         {/* STEP 1: INPUT TAGIHAN */}
         {currentStep === 1 && (
-          <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500 mb-2">
+          <div className="bg-white p-4 sm:p-6 md:p-10 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100">
+            <div className="mb-6 md:mb-8">
+              <h1 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500 mb-2">
                 Input Tagihan
               </h1>
-              <p className="text-slate-500">Masukkan detail tagihan Anda</p>
+              <p className="text-sm md:text-base text-slate-500">Masukkan detail tagihan Anda</p>
             </div>
 
             <form className="space-y-6">
@@ -256,13 +259,13 @@ function Split() {
                   <Tag className="w-4 h-4 text-green-500" />
                   Diskon
                 </label>
-                <div className="flex gap-3">
+                <div className="flex gap-2 md:gap-3 min-w-0">
                   <input 
                     type="number" 
-                    placeholder="Contoh: 50000 atau 10" 
-                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-300 transition"
+                    placeholder="Contoh: 50000" 
+                    className="flex-1 min-w-0 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 md:px-4 md:py-3 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-green-300 transition"
                   />
-                  <select className="bg-white border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-300 font-medium text-slate-700 outline-none cursor-pointer">
+                  <select className="bg-white border border-slate-200 rounded-xl px-2 md:px-4 py-2 md:py-3 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-green-300 font-medium text-slate-700 outline-none cursor-pointer shrink-0">
                     <option value="rp">Rp</option>
                     <option value="percent">%</option>
                   </select>
@@ -364,12 +367,12 @@ function Split() {
 
         {/* STEP 2: INPUT PESERTA */}
         {currentStep === 2 && (
-          <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-pink-500 mb-2">
+          <div className="bg-white p-4 sm:p-6 md:p-10 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100">
+            <div className="mb-6 md:mb-8">
+              <h1 className="text-2xl md:text-3xl font-bold text-pink-500 mb-2">
                 Input Peserta
               </h1>
-              <p className="text-slate-500">Masukkan nama {Math.max(2, Number(jumlahOrang) || 2)} orang yang akan membagi tagihan</p>
+              <p className="text-sm md:text-base text-slate-500">Masukkan nama {Math.max(2, Number(jumlahOrang) || 2)} orang yang akan membagi tagihan</p>
             </div>
 
             <div className="space-y-6">
@@ -384,7 +387,7 @@ function Split() {
                     <User className="w-6 h-6 text-white" />
                   </div>
                   
-                  <div className="flex-grow">
+                  <div className="flex-grow min-w-0">
                     <label className="text-xs font-bold text-slate-500 block mb-1">Orang {index + 1}</label>
                     <input 
                       type="text" 
@@ -395,20 +398,20 @@ function Split() {
                         newParticipants[index].name = e.target.value;
                         setParticipants(newParticipants);
                       }}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
+                      className="w-full min-w-0 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 md:px-4 md:py-3 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
                     />
                   </div>
                   {Number(jumlahOrang) > 2 ? (
                     <button 
                       type="button"
                       onClick={() => removeParticipant(index)}
-                      className="text-red-400 hover:text-red-600 transition p-2 mt-4"
+                      className="shrink-0 text-red-400 hover:text-red-600 transition p-2 mt-4"
                       title="Hapus peserta ini"
                     >
-                      <X className="w-5 h-5" />
+                      <X className="w-5 h-5 shrink-0" />
                     </button>
                   ) : (
-                    <div className="w-9 mt-4"></div> /* Placeholder to keep alignment */
+                    <div className="w-9 mt-4 shrink-0"></div> /* Placeholder to keep alignment */
                   )}
                 </div>
               ))}
@@ -441,12 +444,12 @@ function Split() {
 
         {/* STEP 3: PILIH METODE */}
         {currentStep === 3 && (
-          <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-pink-500 mb-2">
+          <div className="bg-white p-4 sm:p-6 md:p-10 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100">
+            <div className="mb-6 md:mb-8">
+              <h1 className="text-2xl md:text-3xl font-bold text-pink-500 mb-2">
                 Pilih Metode Pembagian
               </h1>
-              <p className="text-slate-500">Bagaimana Anda ingin membagi tagihan?</p>
+              <p className="text-sm md:text-base text-slate-500">Bagaimana Anda ingin membagi tagihan?</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
@@ -503,12 +506,12 @@ function Split() {
 
         {/* STEP 4: PREVIEW SPLIT SAMA RATA */}
         {currentStep === 4 && splitMethod === 'rata' && (
-          <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-pink-500 mb-2">
+          <div className="bg-white p-4 sm:p-6 md:p-10 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100">
+            <div className="mb-6 md:mb-8">
+              <h1 className="text-2xl md:text-3xl font-bold text-pink-500 mb-2">
                 Preview Split Sama Rata
               </h1>
-              <p className="text-slate-500">Setiap orang akan membayar jumlah yang sama</p>
+              <p className="text-sm md:text-base text-slate-500">Setiap orang akan membayar jumlah yang sama</p>
             </div>
 
             {/* Info Box */}
@@ -577,10 +580,10 @@ function Split() {
 
         {/* STEP 4: PREVIEW CUSTOM SPLIT */}
         {currentStep === 4 && splitMethod === 'custom' && (
-          <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-pink-500 mb-2">Custom Split</h1>
-              <p className="text-slate-500">Masukkan detail pembelian untuk setiap orang (harga makanan saja)</p>
+          <div className="bg-white p-4 sm:p-6 md:p-10 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100">
+            <div className="mb-6 md:mb-8">
+              <h1 className="text-2xl md:text-3xl font-bold text-pink-500 mb-2">Custom Split</h1>
+              <p className="text-sm md:text-base text-slate-500">Masukkan detail pembelian untuk setiap orang (harga makanan saja)</p>
             </div>
 
             {/* Info Box */}
@@ -699,12 +702,12 @@ function Split() {
 
         {/* STEP 5: RINGKASAN SELESAI */}
         {currentStep === 5 && (
-          <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100 text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-purple-300 to-blue-300 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md">
-              <CheckCircle className="text-white w-10 h-10" />
+          <div className="bg-white p-4 sm:p-6 md:p-10 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 text-center">
+            <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-300 to-blue-300 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-md shrink-0">
+              <CheckCircle className="text-white w-8 h-8 md:w-10 md:h-10" />
             </div>
-            <h1 className="text-3xl font-bold text-purple-500 mb-2">Pembagian Selesai!</h1>
-            <p className="text-slate-500 mb-8">Berikut adalah ringkasan pembagian tagihan</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-purple-500 mb-2">Pembagian Selesai!</h1>
+            <p className="text-sm md:text-base text-slate-500 mb-6 md:mb-8">Berikut adalah ringkasan pembagian tagihan</p>
 
             <div className="bg-slate-50 rounded-2xl p-6 text-left border border-slate-100 mb-6">
               <h3 className="font-bold text-slate-800 mb-4">Total Tagihan</h3>
@@ -784,16 +787,50 @@ function Split() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button onClick={handleShare} className="flex items-center justify-center gap-2 border-2 border-blue-200 text-blue-500 font-bold py-3 rounded-xl hover:bg-blue-50 transition">
-                <Share2 className="w-5 h-5" /> Share
-              </button>
-              <button onClick={handleSimpan} className="flex items-center justify-center gap-2 border-2 border-green-200 text-green-500 font-bold py-3 rounded-xl hover:bg-green-50 transition">
-                <Save className="w-5 h-5" /> Simpan
-              </button>
-              <button onClick={handleReset} className="flex items-center justify-center gap-2 bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-3 rounded-xl hover:opacity-90 transition shadow-md">
-                <RotateCcw className="w-5 h-5" /> Buat Lagi
-              </button>
+            {/* ACTION BUTTONS AREA */}
+            <div className="mt-8">
+              {/* Baris 1: Utilitas (Share, Simpan, Buat Lagi) */}
+              <div className="grid grid-cols-3 gap-3 mb-5">
+                <button 
+                  onClick={handleShare}
+                  className="w-full bg-white border border-blue-200 text-blue-500 font-semibold py-3 rounded-xl hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 text-sm"
+                >
+                  <Share2 className="w-4 h-4" /> Share
+                </button>
+                <button 
+                  onClick={handleSimpan}
+                  className="w-full bg-white border border-green-200 text-green-500 font-semibold py-3 rounded-xl hover:bg-green-50 transition-colors flex items-center justify-center gap-2 text-sm"
+                >
+                  <Save className="w-4 h-4" /> Simpan
+                </button>
+                <button 
+                  onClick={() => setCurrentStep(1)}
+                  className="w-full bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm shadow-sm"
+                >
+                  <RotateCcw className="w-4 h-4" /> Buat Lagi
+                </button>
+              </div>
+
+              {/* Garis Pemisah */}
+              <div className="border-t border-slate-100 mb-5"></div>
+
+              {/* Baris 2: Aksi Final (Dashboard & Pembayaran) */}
+              <div className="grid grid-cols-2 gap-4">
+                <button 
+                  onClick={() => navigate('/dashboard')}
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-600 font-bold py-4 rounded-2xl hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                >
+                  <Home className="w-5 h-5" /> 
+                  <span>Ke Dashboard</span>
+                </button>
+                <button 
+                  onClick={() => alert('Fitur Integrasi Pembayaran akan segera hadir!')}
+                  className="w-full bg-gradient-to-r from-emerald-400 to-teal-400 text-white font-bold py-4 rounded-2xl hover:shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-md"
+                >
+                  <Wallet className="w-5 h-5" /> 
+                  <span>Pembayaran</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
