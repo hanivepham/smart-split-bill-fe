@@ -7,6 +7,7 @@ import Split from './pages/Split';
 import History from './pages/History';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Payment from './pages/Payment';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/history" element={<History />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/payment" element={<Payment />} />
         </Routes>
       </div>
     </BrowserRouter>

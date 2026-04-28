@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Calculator, CalendarDays, Users, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Calculator, CalendarDays, Users, ChevronDown, ChevronUp, Trash2, Wallet } from 'lucide-react';
 
 function History() {
   const [history, setHistory] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     try {
@@ -111,12 +112,23 @@ function History() {
                         </div>
                       ))}
                     </div>
-                    <button 
-                      onClick={() => handleDelete(item.id)} 
-                      className="w-full border-2 border-red-100 text-red-500 font-bold text-sm md:text-base py-2 md:py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-red-50 transition"
-                    >
-                      <Trash2 className="w-4 h-4 md:w-5 md:h-5"/> Hapus Riwayat
-                    </button>
+                    <div className="grid grid-cols-2 gap-3 mt-4">
+                      <button
+                        onClick={() => navigate('/payment')}
+                        className="w-full bg-gradient-to-r from-emerald-400 to-teal-400 text-white font-bold py-3 rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm text-sm md:text-base"
+                      >
+                        <Wallet className="w-4 h-4 md:w-5 md:h-5" /> Lanjut Bayar
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(item.id);
+                        }}
+                        className="w-full bg-white border border-red-200 text-red-500 font-semibold py-3 rounded-xl hover:bg-red-50 transition-colors flex items-center justify-center gap-2 text-sm md:text-base"
+                      >
+                        <Trash2 className="w-4 h-4 md:w-5 md:h-5" /> Hapus Riwayat
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

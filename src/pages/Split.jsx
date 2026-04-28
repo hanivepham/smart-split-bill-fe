@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -30,11 +30,50 @@ import {
 function Split() {
   const navigate = useNavigate();
   
-  const [totalTagihan, setTotalTagihan] = useState('');
-  const [jumlahOrang, setJumlahOrang] = useState(2);
-  const [participants, setParticipants] = useState([]);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [splitMethod, setSplitMethod] = useState('rata');
+  const [totalTagihan, setTotalTagihan] = useState(() => {
+    const saved = sessionStorage.getItem("split_totalTagihan");
+    return saved ? JSON.parse(saved) : '';
+  });
+  
+  const [jumlahOrang, setJumlahOrang] = useState(() => {
+    const saved = sessionStorage.getItem("split_jumlahOrang");
+    return saved ? JSON.parse(saved) : 2;
+  });
+
+  const [participants, setParticipants] = useState(() => {
+    const saved = sessionStorage.getItem("split_participants");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [currentStep, setCurrentStep] = useState(() => {
+    const saved = sessionStorage.getItem("split_currentStep");
+    return saved ? JSON.parse(saved) : 1;
+  });
+
+  const [splitMethod, setSplitMethod] = useState(() => {
+    const saved = sessionStorage.getItem("split_splitMethod");
+    return saved ? JSON.parse(saved) : 'rata';
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem("split_totalTagihan", JSON.stringify(totalTagihan));
+  }, [totalTagihan]);
+
+  useEffect(() => {
+    sessionStorage.setItem("split_jumlahOrang", JSON.stringify(jumlahOrang));
+  }, [jumlahOrang]);
+
+  useEffect(() => {
+    sessionStorage.setItem("split_participants", JSON.stringify(participants));
+  }, [participants]);
+
+  useEffect(() => {
+    sessionStorage.setItem("split_currentStep", JSON.stringify(currentStep));
+  }, [currentStep]);
+
+  useEffect(() => {
+    sessionStorage.setItem("split_splitMethod", JSON.stringify(splitMethod));
+  }, [splitMethod]);
 
   const handleLanjutStep1 = () => {
     if (totalTagihan > 0 && jumlahOrang > 0) {
@@ -142,6 +181,11 @@ function Split() {
     setJumlahOrang(2);
     setParticipants([]);
     setSplitMethod('rata');
+    sessionStorage.removeItem("split_totalTagihan");
+    sessionStorage.removeItem("split_jumlahOrang");
+    sessionStorage.removeItem("split_participants");
+    sessionStorage.removeItem("split_currentStep");
+    sessionStorage.removeItem("split_splitMethod");
     setCurrentStep(1);
   };
 
@@ -804,7 +848,9 @@ function Split() {
                   <Save className="w-4 h-4" /> Simpan
                 </button>
                 <button 
-                  onClick={() => setCurrentStep(1)}
+                  onClick={() => {
+                    handleReset();
+                  }}
                   className="w-full bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm shadow-sm"
                 >
                   <RotateCcw className="w-4 h-4" /> Buat Lagi
@@ -824,7 +870,7 @@ function Split() {
                   <span>Ke Dashboard</span>
                 </button>
                 <button 
-                  onClick={() => alert('Fitur Integrasi Pembayaran akan segera hadir!')}
+                  onClick={() => navigate('/payment')}
                   className="w-full bg-gradient-to-r from-emerald-400 to-teal-400 text-white font-bold py-4 rounded-2xl hover:shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-md"
                 >
                   <Wallet className="w-5 h-5" /> 
