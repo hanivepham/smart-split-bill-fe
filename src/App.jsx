@@ -11,15 +11,17 @@ import Register from './pages/Register';
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/split" element={<Split />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
+      <div className="overflow-x-hidden w-full max-w-[100vw] min-h-screen flex flex-col relative">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/split" element={<Split />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }

@@ -47,11 +47,12 @@ function Home() {
                         </div>
                     </div>
 
-                    <div className="flex-1">
+                    <div className="flex-1 w-full relative mt-8 lg:mt-0 overflow-hidden rounded-[2rem] p-4">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-pink-300 to-blue-300 blur-2xl opacity-50 scale-105 rounded-[3rem]"></div>
                         <img
                             src="https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=2070&auto=format&fit=crop"
                             alt="Teman nongkrong"
-                            className="rounded-3xl shadow-2xl object-cover w-full h-[400px]"
+                            className="relative rounded-3xl shadow-2xl object-cover w-full h-[400px]"
                         />
                     </div>
                 </div>
