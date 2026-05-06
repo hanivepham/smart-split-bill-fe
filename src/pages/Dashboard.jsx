@@ -1,14 +1,30 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Calculator, Plus, Clock } from 'lucide-react';
 
 function Dashboard() {
+    const navigate = useNavigate();
+
+    const handleStartSplit = () => {
+        sessionStorage.removeItem("split_currentStep");
+        sessionStorage.removeItem("split_billData");
+        sessionStorage.removeItem("split_participants");
+        sessionStorage.removeItem("split_method");
+        sessionStorage.removeItem("split_customSplits");
+        
+        // Hapus juga kunci spesifik yang ada di kode Split.jsx untuk berjaga-jaga
+        sessionStorage.removeItem("split_totalTagihan");
+        sessionStorage.removeItem("split_jumlahOrang");
+        sessionStorage.removeItem("split_splitMethod");
+
+        navigate('/split');
+    };
+
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col">
             {/* HEADER */}
             <header className="flex items-center justify-between px-4 py-4 md:px-8 md:py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
                 <div className="flex items-center gap-2 md:gap-4 min-w-0">
-
 
                     {/* Logo */}
                     <div className="flex items-center gap-2 min-w-0">
@@ -45,10 +61,9 @@ function Dashboard() {
                         <p className="text-sm md:text-base text-slate-500 mb-6 md:mb-10 flex-grow leading-relaxed">
                             Mulai pembagian tagihan baru dengan teman-temanmu
                         </p>
-                        {/* Nanti ini diarahkan ke halaman Input Tagihan (/split) */}
-                        <Link to="/split" className="w-full text-center bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-3 md:py-4 rounded-xl md:rounded-2xl hover:opacity-90 transition shadow-lg shadow-blue-200/50">
+                        <button onClick={handleStartSplit} className="w-full text-center bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-3 md:py-4 rounded-xl md:rounded-2xl hover:opacity-90 transition shadow-lg shadow-blue-200/50">
                             Start Splitting
-                        </Link>
+                        </button>
                     </div>
 
                     {/* CARD 2: RIWAYAT TAGIHAN */}

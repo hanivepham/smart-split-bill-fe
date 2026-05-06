@@ -23,6 +23,21 @@ function History() {
     localStorage.setItem('splitHistory', JSON.stringify(filtered));
   };
 
+  const handleStartNewSplit = () => {
+    sessionStorage.removeItem("split_currentStep");
+    sessionStorage.removeItem("split_billData");
+    sessionStorage.removeItem("split_participants");
+    sessionStorage.removeItem("split_method");
+    sessionStorage.removeItem("split_customSplits");
+    
+    // Sesuaikan juga dengan kunci dari versi yang lebih baru
+    sessionStorage.removeItem("split_totalTagihan");
+    sessionStorage.removeItem("split_jumlahOrang");
+    sessionStorage.removeItem("split_splitMethod");
+
+    navigate('/split');
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col">
       {/* HEADER */}
@@ -65,12 +80,12 @@ function History() {
               Mulai buat pembagian tagihan untuk melihat riwayat
             </p>
             
-            <Link 
-              to="/split" 
+            <button 
+              onClick={handleStartNewSplit}
               className="bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-3 px-6 md:px-8 rounded-full hover:opacity-90 transition shadow-md shadow-blue-200/50 text-sm md:text-base"
             >
               Buat Pembagian Baru
-            </Link>
+            </button>
           </div>
         ) : (
           /* Jika Ada Riwayat */
