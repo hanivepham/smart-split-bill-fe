@@ -12,8 +12,68 @@ import {
   History, 
   Share2 
 } from 'lucide-react';
+import FeatureCard from '../components/features/FeatureCard';
 
 function Features() {
+  const featuresList = [
+    {
+      icon: Receipt,
+      bgClass: 'bg-pink-100',
+      iconClass: 'text-pink-500',
+      title: 'Input Tagihan',
+      description: 'Masukkan total tagihan dengan mudah. Tambahkan PPN dan service charge secara otomatis untuk perhitungan yang akurat.'
+    },
+    {
+      icon: Scan,
+      bgClass: 'bg-blue-100',
+      iconClass: 'text-blue-500',
+      title: 'Scan Struk (OCR)',
+      description: 'Upload foto struk belanja Anda dan biarkan sistem otomatis mengenali item dan harga. (Fitur dalam pengembangan).'
+    },
+    {
+      icon: Users,
+      bgClass: 'bg-purple-100',
+      iconClass: 'text-purple-500',
+      title: 'Input Peserta',
+      description: 'Tambahkan nama semua orang yang akan berbagi tagihan. Mudah dikelola dengan antarmuka yang intuitif.'
+    },
+    {
+      icon: Split,
+      bgClass: 'bg-indigo-100',
+      iconClass: 'text-indigo-500',
+      title: 'Split Otomatis',
+      description: 'Bagi tagihan secara merata untuk semua orang dengan satu klik. Perhitungan otomatis termasuk pajak dan service.'
+    },
+    {
+      icon: PenTool,
+      bgClass: 'bg-red-100',
+      iconClass: 'text-red-500',
+      title: 'Custom Split (Proporsional)',
+      description: 'Atur pembagian sesuai apa yang dipesan masing-masing orang. Sistem akan otomatis menghitung pajak dan service secara proporsional.'
+    },
+    {
+      icon: Percent,
+      bgClass: 'bg-cyan-100',
+      iconClass: 'text-cyan-500',
+      title: 'PPN & Service',
+      description: 'Tambahkan pajak (PPN) dan service charge dengan persentase custom. Perhitungan otomatis untuk setiap orang.'
+    },
+    {
+      icon: History,
+      bgClass: 'bg-teal-100',
+      iconClass: 'text-teal-500',
+      title: 'Riwayat',
+      description: 'Simpan dan akses riwayat pembagian tagihan sebelumnya. Tidak akan pernah lupa siapa yang harus bayar berapa.'
+    },
+    {
+      icon: Share2,
+      bgClass: 'bg-yellow-100',
+      iconClass: 'text-yellow-600',
+      title: 'Bagikan Hasil',
+      description: 'Share hasil pembagian ke teman dengan mudah melalui berbagai platform. Transparansi total untuk semua pihak.'
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col">
       {/* HEADER */}
@@ -44,95 +104,16 @@ function Features() {
 
         {/* GRID FITUR */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-          
-          {/* Card 1 */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <div className="bg-pink-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-              <Receipt className="text-pink-500 w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Input Tagihan</h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Masukkan total tagihan dengan mudah. Tambahkan PPN dan service charge secara otomatis untuk perhitungan yang akurat.
-            </p>
-          </div>
-
-          {/* Card 2 */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <div className="bg-blue-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-              <Scan className="text-blue-500 w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Scan Struk (OCR)</h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Upload foto struk belanja Anda dan biarkan sistem otomatis mengenali item dan harga. (Fitur dalam pengembangan).
-            </p>
-          </div>
-
-          {/* Card 3 */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <div className="bg-purple-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-              <Users className="text-purple-500 w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Input Peserta</h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Tambahkan nama semua orang yang akan berbagi tagihan. Mudah dikelola dengan antarmuka yang intuitif.
-            </p>
-          </div>
-
-          {/* Card 4 */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <div className="bg-indigo-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-              <Split className="text-indigo-500 w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Split Otomatis</h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Bagi tagihan secara merata untuk semua orang dengan satu klik. Perhitungan otomatis termasuk pajak dan service.
-            </p>
-          </div>
-
-          {/* Card 5 */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <div className="bg-red-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-              <PenTool className="text-red-500 w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Custom Split (Proporsional)</h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Atur pembagian sesuai apa yang dipesan masing-masing orang. Sistem akan otomatis menghitung pajak dan service secara proporsional.
-            </p>
-          </div>
-
-          {/* Card 6 */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <div className="bg-cyan-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-              <Percent className="text-cyan-500 w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-lg mb-2">PPN & Service</h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Tambahkan pajak (PPN) dan service charge dengan persentase custom. Perhitungan otomatis untuk setiap orang.
-            </p>
-          </div>
-
-          {/* Card 7 */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <div className="bg-teal-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-              <History className="text-teal-500 w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Riwayat</h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Simpan dan akses riwayat pembagian tagihan sebelumnya. Tidak akan pernah lupa siapa yang harus bayar berapa.
-            </p>
-          </div>
-
-          {/* Card 8 */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
-            <div className="bg-yellow-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-              <Share2 className="text-yellow-600 w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Bagikan Hasil</h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Share hasil pembagian ke teman dengan mudah melalui berbagai platform. Transparansi total untuk semua pihak.
-            </p>
-          </div>
-
+          {featuresList.map((feature, index) => (
+            <FeatureCard 
+              key={index} 
+              icon={feature.icon}
+              bgClass={feature.bgClass}
+              iconClass={feature.iconClass}
+              title={feature.title} 
+              description={feature.description} 
+            />
+          ))}
         </div>
 
         {/* CALL TO ACTION SECTION */}
