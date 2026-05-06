@@ -1,7 +1,6 @@
 import React from 'react';
 import Navbar from '../components/layout/Navbar';
 import Hero from '../components/home/Hero';
-import Features from '../components/home/Features';
 import Footer from '../components/layout/Footer';
 
 function Home() {
@@ -11,7 +10,6 @@ function Home() {
             
             <main className="pt-28 pb-20 px-8 max-w-7xl mx-auto">
                 <Hero />
-                <Features />
             </main>
 
             <Footer />
