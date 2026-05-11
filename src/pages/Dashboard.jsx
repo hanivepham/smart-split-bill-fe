@@ -38,7 +38,7 @@ function Dashboard() {
                 </div>
 
                 <div className="text-xs md:text-sm font-medium text-slate-500 shrink-0 ml-2">
-                    <Link to="/" className="hover:text-blue-500">Home</Link>
+                    <Link to="/" className="bg-pink-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-pink-600 transition-colors duration-300 shadow-sm">Home</Link>
                 </div>
             </header>
 
