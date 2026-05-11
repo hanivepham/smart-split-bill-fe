@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, Share2, Save, RotateCcw, Home, Wallet } from 'lucide-react';
+import { CheckCircle, Share2, Save, RotateCcw, Home, Wallet, QrCode } from 'lucide-react';
 
 function Step5({
   totalTagihan,
@@ -42,6 +42,18 @@ function Step5({
               const perPerson = (Number(totalTagihan) || 0) / participants.length;
               return (
                 <div key={p.id} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
+                  {i === 0 && (
+                    <div className="mb-6 flex flex-col md:flex-row items-center gap-4 bg-purple-50/50 p-4 rounded-xl border border-purple-100">
+                      <div className="bg-white p-3 rounded-xl shadow-sm shrink-0">
+                        <QrCode className="w-16 h-16 md:w-20 md:h-20 text-slate-800" strokeWidth={1.5} />
+                      </div>
+                      <div className="text-left text-sm text-slate-600 leading-relaxed">
+                        Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{p.name || `Orang 1`}</span>.
+                        <br/>
+                        <span className="text-xs text-slate-500">Mendukung GoPay, DANA, OVO, ShopeePay.</span>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex justify-between font-bold mb-4">
                     <span className="text-slate-800">{p.name || `Orang ${i+1}`}</span>
                     <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson || 0)}</span>
@@ -61,6 +73,18 @@ function Step5({
               const porsi = totalTagihan > 0 ? ((personTotal / totalTagihan) * 100).toFixed(1) : 0;
               return (
                 <div key={p.id} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
+                  {i === 0 && (
+                    <div className="mb-6 flex flex-col md:flex-row items-center gap-4 bg-purple-50/50 p-4 rounded-xl border border-purple-100">
+                      <div className="bg-white p-3 rounded-xl shadow-sm shrink-0">
+                        <QrCode className="w-16 h-16 md:w-20 md:h-20 text-slate-800" strokeWidth={1.5} />
+                      </div>
+                      <div className="text-left text-sm text-slate-600 leading-relaxed">
+                        Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{p.name || `Orang 1`}</span>.
+                        <br/>
+                        <span className="text-xs text-slate-500">Mendukung GoPay, DANA, OVO, ShopeePay.</span>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex justify-between font-bold mb-1">
                     <span className="text-slate-800">{p.name || `Orang ${i+1}`}</span>
                     <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(personTotal || 0)}</span>
@@ -93,7 +117,7 @@ function Step5({
       </div>
       
       <div className="mt-8">
-        <div className="grid grid-cols-3 gap-3 mb-5">
+        <div className="grid grid-cols-2 gap-3 mb-5">
           <button 
             onClick={handleShare}
             className="w-full bg-white border border-blue-200 text-blue-500 font-semibold py-3 rounded-xl hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 text-sm"
@@ -107,27 +131,16 @@ function Step5({
             <Save className="w-4 h-4" /> Simpan
           </button>
           <button 
+            onClick={() => navigate('/dashboard')}
+            className="w-full bg-slate-50 border border-slate-200 text-slate-600 font-semibold py-3 rounded-xl hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+          >
+            <Home className="w-4 h-4" /> Ke Dashboard
+          </button>
+          <button 
             onClick={handleReset}
             className="w-full bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm shadow-sm"
           >
             <RotateCcw className="w-4 h-4" /> Buat Lagi
-          </button>
-        </div>
-        <div className="border-t border-slate-100 mb-5"></div>
-        <div className="grid grid-cols-2 gap-4">
-          <button 
-            onClick={() => navigate('/dashboard')}
-            className="w-full bg-slate-50 border border-slate-200 text-slate-600 font-bold py-4 rounded-2xl hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 shadow-sm"
-          >
-            <Home className="w-5 h-5" /> 
-            <span>Ke Dashboard</span>
-          </button>
-          <button 
-            onClick={() => navigate('/payment')}
-            className="w-full bg-gradient-to-r from-emerald-400 to-teal-400 text-white font-bold py-4 rounded-2xl hover:shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-md"
-          >
-            <Wallet className="w-5 h-5" /> 
-            <span>Pembayaran</span>
           </button>
         </div>
       </div>

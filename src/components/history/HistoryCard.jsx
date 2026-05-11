@@ -1,12 +1,13 @@
-import React from 'react';
-import { CalendarDays, Users, ChevronDown, ChevronUp, Trash2, Wallet } from 'lucide-react';
+import React, { useState } from 'react';
+import { CalendarDays, Users, ChevronDown, ChevronUp, Trash2, Wallet, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 function HistoryCard({ bill, isExpanded, onToggle, onDelete }) {
   const navigate = useNavigate();
+  const [isPaid, setIsPaid] = useState(false);
 
   return (
-    <div className="bg-white border border-slate-100 rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-sm transition-all duration-300">
+    <div className={`bg-white border border-slate-100 rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-sm transition-all duration-300 ${isPaid ? 'opacity-70 bg-slate-50/80 grayscale-[20%]' : ''}`}>
       <div 
         className="flex justify-between items-start gap-3 md:gap-4 cursor-pointer" 
         onClick={onToggle}
@@ -25,7 +26,19 @@ function HistoryCard({ bill, isExpanded, onToggle, onDelete }) {
           </div>
         </div>
         <div className="flex flex-col items-end gap-1 md:gap-2 mt-1 shrink-0">
-          {isExpanded ? <ChevronUp className="text-slate-400 w-4 h-4 md:w-5 md:h-5"/> : <ChevronDown className="text-slate-400 w-4 h-4 md:w-5 md:h-5"/>}
+          <div className="flex items-center gap-2 md:gap-3">
+            <button 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                setIsPaid(!isPaid); 
+              }} 
+              className={`p-1 md:p-1.5 rounded-full transition-colors ${isPaid ? 'text-emerald-500 bg-emerald-50' : 'text-slate-300 hover:text-slate-400 hover:bg-slate-50'}`}
+              title={isPaid ? "Tandai Belum Lunas" : "Tandai Lunas"}
+            >
+              <CheckCircle className="w-5 h-5 md:w-6 md:h-6" />
+            </button>
+            {isExpanded ? <ChevronUp className="text-slate-400 w-4 h-4 md:w-5 md:h-5"/> : <ChevronDown className="text-slate-400 w-4 h-4 md:w-5 md:h-5"/>}
+          </div>
           <span className="font-bold text-sm md:text-xl bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500 mt-1 md:mt-2">
             Rp {new Intl.NumberFormat('id-ID').format(Number(bill.total) || 0)}
           </span>
@@ -44,10 +57,29 @@ function HistoryCard({ bill, isExpanded, onToggle, onDelete }) {
           </div>
           <div className="grid grid-cols-2 gap-3 mt-4">
             <button
-              onClick={() => navigate('/payment')}
+              onClick={(e) => {
+                e.stopPropagation();
+                // Map history data back to session
+                sessionStorage.setItem("split_billData", JSON.stringify({
+                  totalTagihan: bill.total.toString(),
+                  tax: 0,
+                  service: 0,
+                  discount: 0
+                }));
+                sessionStorage.setItem("split_participants", JSON.stringify(
+                  bill.details.map((d, i) => ({
+                    id: Date.now() + i,
+                    name: d.name,
+                    items: [{ menu: 'Item History', price: d.amount }]
+                  }))
+                ));
+                sessionStorage.setItem("split_method", bill.method === 'Bagi Rata' ? 'rata' : 'custom');
+                sessionStorage.setItem("split_currentStep", "5");
+                navigate('/split');
+              }}
               className="w-full bg-gradient-to-r from-emerald-400 to-teal-400 text-white font-bold py-3 rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm text-sm md:text-base"
             >
-              <Wallet className="w-4 h-4 md:w-5 md:h-5" /> Lanjut Bayar
+              <Wallet className="w-4 h-4 md:w-5 md:h-5" /> Lihat Detail
             </button>
             <button
               onClick={(e) => {
