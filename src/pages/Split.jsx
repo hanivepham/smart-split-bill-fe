@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   ArrowLeft, Calculator, Check
 } from 'lucide-react';
@@ -12,6 +12,7 @@ import Step5 from '../components/split/Step5';
 
 function Split() {
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [totalTagihan, setTotalTagihan] = useState(() => {
     const saved = sessionStorage.getItem("split_totalTagihan");
@@ -176,7 +177,16 @@ function Split() {
             <ArrowLeft className="text-slate-600 w-5 h-5" />
           </Link>
         ) : (
-          <button onClick={() => setCurrentStep(currentStep - 1)} className="p-2 hover:bg-slate-100 rounded-full transition shrink-0">
+          <button 
+            onClick={() => {
+              if (currentStep === 5 && location.state?.fromHistory) {
+                navigate('/history');
+              } else {
+                setCurrentStep(currentStep - 1);
+              }
+            }} 
+            className="p-2 hover:bg-slate-100 rounded-full transition shrink-0"
+          >
             <ArrowLeft className="text-slate-600 w-5 h-5" />
           </button>
         )}

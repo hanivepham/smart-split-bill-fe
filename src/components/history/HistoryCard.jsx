@@ -75,9 +75,10 @@ function HistoryCard({ bill, isExpanded, onToggle, onDelete }) {
                 ));
                 sessionStorage.setItem("split_method", bill.method === 'Bagi Rata' ? 'rata' : 'custom');
                 sessionStorage.setItem("split_currentStep", "5");
-                navigate('/split');
+                navigate('/split', { state: { fromHistory: true } });
               }}
-              className="w-full bg-gradient-to-r from-emerald-400 to-teal-400 text-white font-bold py-3 rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm text-sm md:text-base"
+              disabled={isPaid}
+              className={`w-full font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm text-sm md:text-base ${isPaid ? 'bg-slate-200 text-slate-400 opacity-50 pointer-events-none' : 'bg-gradient-to-r from-emerald-400 to-teal-400 text-white hover:opacity-90 transition-opacity'}`}
             >
               <Wallet className="w-4 h-4 md:w-5 md:h-5" /> Lihat Detail
             </button>
