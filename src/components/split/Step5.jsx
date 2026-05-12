@@ -48,9 +48,9 @@ function Step5({
                         <QrCode className="w-16 h-16 md:w-20 md:h-20 text-slate-800" strokeWidth={1.5} />
                       </div>
                       <div className="text-left text-sm text-slate-600 leading-relaxed">
-                        Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{p.name || `Orang 1`}</span>.
+                        Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{participants[0]?.name || 'Penalang'}</span>.
                         <br/>
-                        <span className="text-xs text-slate-500">Mendukung GoPay, DANA, OVO, ShopeePay.</span>
+                        <span className="text-xs text-slate-500">Bisa transfer manual via GoPay, DANA, OVO, atau ShopeePay.</span>
                       </div>
                     </div>
                   )}
@@ -79,9 +79,9 @@ function Step5({
                         <QrCode className="w-16 h-16 md:w-20 md:h-20 text-slate-800" strokeWidth={1.5} />
                       </div>
                       <div className="text-left text-sm text-slate-600 leading-relaxed">
-                        Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{p.name || `Orang 1`}</span>.
+                        Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{participants[0]?.name || 'Penalang'}</span>.
                         <br/>
-                        <span className="text-xs text-slate-500">Mendukung GoPay, DANA, OVO, ShopeePay.</span>
+                        <span className="text-xs text-slate-500">Bisa transfer manual via GoPay, DANA, OVO, atau ShopeePay.</span>
                       </div>
                     </div>
                   )}

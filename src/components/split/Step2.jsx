@@ -34,10 +34,17 @@ function Step2({
             </div>
             
             <div className="flex-grow min-w-0">
-              <label className="text-xs font-bold text-slate-500 block mb-1">Orang {index + 1}</label>
+              <label className="text-xs font-bold text-slate-500 flex items-center mb-1">
+                Orang {index + 1}
+                {index === 0 && (
+                  <span className="ml-2 text-[10px] text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full font-bold">
+                    (Penalang)
+                  </span>
+                )}
+              </label>
               <input 
                 type="text" 
-                placeholder={`Nama orang ${index + 1}`} 
+                placeholder="Nama" 
                 value={p.name}
                 onChange={(e) => {
                   const newParticipants = [...participants];
@@ -47,7 +54,7 @@ function Step2({
                 className="w-full min-w-0 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 md:px-4 md:py-3 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
               />
             </div>
-            {Number(jumlahOrang) > 2 ? (
+            {Number(jumlahOrang) > 2 && index !== 0 ? (
               <button 
                 type="button"
                 onClick={() => removeParticipant(index)}

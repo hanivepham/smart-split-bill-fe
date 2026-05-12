@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calculator, Plus, Clock } from 'lucide-react';
+import { Calculator, Plus, Clock, Home } from 'lucide-react';
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -27,18 +27,20 @@ function Dashboard() {
                 <div className="flex items-center gap-2 md:gap-4 min-w-0">
 
                     {/* Logo */}
-                    <div className="flex items-center gap-2 min-w-0">
+                    <Link to="/" className="flex items-center gap-2 min-w-0 hover:opacity-80 transition-opacity">
                         <div className="bg-gradient-to-r from-pink-400 to-blue-400 p-1.5 rounded-lg shrink-0">
                             <Calculator className="text-white w-5 h-5" />
                         </div>
                         <span className="font-bold text-base md:text-xl bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500 truncate min-w-0">
                             Smart Bill Splitter
                         </span>
-                    </div>
+                    </Link>
                 </div>
 
-                <div className="text-xs md:text-sm font-medium text-slate-500 shrink-0 ml-2">
-                    <Link to="/" className="bg-pink-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-pink-600 transition-colors duration-300 shadow-sm">Home</Link>
+                <div className="shrink-0 ml-2">
+                    <Link to="/" className="p-2 flex items-center justify-center text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-all">
+                        <Home size={24} />
+                    </Link>
                 </div>
             </header>
 

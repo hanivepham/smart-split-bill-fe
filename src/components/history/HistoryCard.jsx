@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 function HistoryCard({ bill, isExpanded, onToggle, onDelete }) {
   const navigate = useNavigate();
-  const [isPaid, setIsPaid] = useState(false);
+  const [isPaid, setIsPaid] = useState(() => {
+    const savedStatus = localStorage.getItem(`paidStatus_${bill.id}`);
+    return savedStatus ? JSON.parse(savedStatus) : false;
+  });
 
   return (
     <div className={`bg-white border border-slate-100 rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-sm transition-all duration-300 ${isPaid ? 'opacity-70 bg-slate-50/80 grayscale-[20%]' : ''}`}>
@@ -30,7 +33,9 @@ function HistoryCard({ bill, isExpanded, onToggle, onDelete }) {
             <button 
               onClick={(e) => { 
                 e.stopPropagation(); 
-                setIsPaid(!isPaid); 
+                const newStatus = !isPaid;
+                setIsPaid(newStatus); 
+                localStorage.setItem(`paidStatus_${bill.id}`, JSON.stringify(newStatus));
               }} 
               className={`p-1 md:p-1.5 rounded-full transition-colors ${isPaid ? 'text-emerald-500 bg-emerald-50' : 'text-slate-300 hover:text-slate-400 hover:bg-slate-50'}`}
               title={isPaid ? "Tandai Belum Lunas" : "Tandai Lunas"}
