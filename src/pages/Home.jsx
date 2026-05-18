@@ -7,7 +7,7 @@ function Home() {
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
             <Navbar />
-            
+
             <main className="pt-28 pb-20 px-8 max-w-7xl mx-auto">
                 <Hero />
             </main>
@@ -17,4 +17,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default Home; //test lagi
