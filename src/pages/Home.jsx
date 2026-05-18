@@ -17,4 +17,4 @@ function Home() {
     );
 }
 
-export default Home; //test lagi
+export default Home; //test akmal
