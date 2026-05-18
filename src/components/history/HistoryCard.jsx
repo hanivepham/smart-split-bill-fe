@@ -64,22 +64,24 @@ function HistoryCard({ bill, isExpanded, onToggle, onDelete }) {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                // Map history data back to session
-                sessionStorage.setItem("split_billData", JSON.stringify({
-                  totalTagihan: bill.total.toString(),
-                  tax: 0,
-                  service: 0,
-                  discount: 0
-                }));
-                sessionStorage.setItem("split_participants", JSON.stringify(
-                  bill.details.map((d, i) => ({
-                    id: Date.now() + i,
-                    name: d.name,
-                    items: [{ menu: 'Item History', price: d.amount }]
-                  }))
-                ));
-                sessionStorage.setItem("split_method", bill.method === 'Bagi Rata' ? 'rata' : 'custom');
-                sessionStorage.setItem("split_currentStep", "5");
+                
+                // Ambil data original jika ada, atau fallback ke mapping data lama
+                const totalTagihan = bill.originalData?.totalTagihan || bill.total || 0;
+                const jumlahOrang = bill.originalData?.jumlahOrang || bill.peopleCount || 2;
+                const participants = bill.originalData?.participants || bill.details?.map((d, i) => ({
+                  id: Date.now() + i,
+                  name: d.name,
+                  items: [{ menu: 'Item History', price: d.amount }]
+                })) || [];
+                const splitMethod = bill.originalData?.splitMethod || (bill.method === 'Split Rata' || bill.method === 'Bagi Rata' ? 'rata' : 'custom');
+
+                // Pastikan semua dibungkus dengan JSON.stringify
+                sessionStorage.setItem("split_totalTagihan", JSON.stringify(totalTagihan));
+                sessionStorage.setItem("split_jumlahOrang", JSON.stringify(jumlahOrang));
+                sessionStorage.setItem("split_participants", JSON.stringify(participants));
+                sessionStorage.setItem("split_splitMethod", JSON.stringify(splitMethod));
+                sessionStorage.setItem("split_currentStep", JSON.stringify(5));
+                
                 navigate('/split', { state: { fromHistory: true } });
               }}
               disabled={isPaid}

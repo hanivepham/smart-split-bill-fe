@@ -149,10 +149,17 @@ function Split() {
           const amount = p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
           return { name, amount };
         }
-      })
+      }),
+      originalData: {
+        totalTagihan,
+        jumlahOrang,
+        participants,
+        splitMethod
+      }
     };
-    const existing = JSON.parse(localStorage.getItem('splitHistory') || '[]');
-    localStorage.setItem('splitHistory', JSON.stringify([newRecord, ...existing]));
+    // Mengambil dari split_history sesuai instruksi
+    const existing = JSON.parse(localStorage.getItem('split_history') || localStorage.getItem('splitHistory') || '[]');
+    localStorage.setItem('split_history', JSON.stringify([newRecord, ...existing]));
     alert('Berhasil disimpan ke riwayat!');
   };
 

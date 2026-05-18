@@ -4,24 +4,22 @@ import { ArrowLeft, Calculator, CalendarDays } from 'lucide-react';
 import HistoryCard from '../components/history/HistoryCard';
 
 function History() {
-  const [history, setHistory] = useState([]);
-  const [expandedId, setExpandedId] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
+  const [history, setHistory] = useState(() => {
     try {
-      const data = JSON.parse(localStorage.getItem('splitHistory') || '[]');
-      setHistory(data);
+      const saved = localStorage.getItem('split_history') || localStorage.getItem('splitHistory');
+      return saved ? JSON.parse(saved) : [];
     } catch (error) {
       console.error('Failed to parse history:', error);
-      setHistory([]);
+      return [];
     }
-  }, []);
+  });
+  const [expandedId, setExpandedId] = useState(null);
+  const navigate = useNavigate();
 
   const handleDelete = (id) => {
     const filtered = history.filter(item => item.id !== id);
     setHistory(filtered);
-    localStorage.setItem('splitHistory', JSON.stringify(filtered));
+    localStorage.setItem('split_history', JSON.stringify(filtered));
   };
 
   const handleStartNewSplit = () => {
