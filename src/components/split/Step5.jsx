@@ -16,7 +16,17 @@ function Step5({
   const handleShare = async () => {
     if (!receiptRef.current) return;
     try {
-      const blob = await toBlob(receiptRef.current, { cacheBust: true, backgroundColor: '#ffffff' });
+      const blob = await toBlob(receiptRef.current, {
+        // Tambahkan padding internal untuk membuat konten terlihat di tengah bingkai yang rapi
+        style: {
+          padding: '30px', // Sesuaikan nilainya (misal 20px - 40px) untuk margin yang pas
+          width: '100%',
+          height: 'auto',
+        },
+        backgroundColor: '#ffffff', // Pastikan background tetap putih bersih
+        scale: 2, // Tingkatkan skala untuk resolusi yang lebih tajam di semua device
+        cacheBust: true,
+      });
       if (!blob) return;
       
       const file = new File([blob], 'split-bill-receipt.png', { type: 'image/png' });
