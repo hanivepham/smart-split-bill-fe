@@ -17,4 +17,4 @@ function Home() {
     );
 }
 
-export default Home; //test github push
+export default Home;
