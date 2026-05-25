@@ -17,4 +17,4 @@ function Home() {
     );
 }
 
-export default Home; //test akmal
+export default Home; //test git 
