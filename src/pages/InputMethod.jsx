@@ -1,0 +1,68 @@
+import React from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft, Calculator, Keyboard, Camera } from 'lucide-react';
+
+function InputMethod() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col">
+      {/* HEADER */}
+      <header className="flex items-center gap-2 md:gap-4 px-4 py-4 md:px-8 md:py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
+        <Link to="/dashboard" className="p-2 hover:bg-slate-100 rounded-full transition shrink-0">
+          <ArrowLeft className="text-slate-600 w-5 h-5" />
+        </Link>
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="bg-gradient-to-r from-pink-400 to-blue-400 p-1.5 rounded-lg shrink-0">
+            <Calculator className="text-white w-5 h-5" />
+          </div>
+          <span className="font-bold text-base md:text-lg bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500 truncate min-w-0">
+            Smart Bill Splitter
+          </span>
+        </div>
+      </header>
+
+      {/* MAIN CONTENT */}
+      <main className="flex-grow flex flex-col items-center justify-center px-4 py-8 md:px-8 md:py-12 max-w-5xl mx-auto w-full">
+        <div className="text-center mb-10 md:mb-14">
+          <h1 className="text-3xl md:text-5xl font-extrabold mb-3 md:mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-400 to-blue-500 inline-block pb-2">
+            Metode Input
+          </h1>
+          <p className="text-slate-500 text-base md:text-lg">Pilih cara kamu memasukkan tagihan</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 w-full max-w-4xl">
+          {/* CARD 1: INPUT MANUAL */}
+          <div className="bg-white p-6 sm:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-start hover:shadow-xl transition-all duration-300 group cursor-pointer" onClick={() => navigate('/split')}>
+            <div className="bg-gradient-to-br from-pink-300 to-blue-300 w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-inner group-hover:scale-105 transition-transform shrink-0">
+              <Keyboard className="text-white w-7 h-7 md:w-8 md:h-8" />
+            </div>
+            <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-3 flex-shrink-0">Input Manual</h2>
+            <p className="text-sm md:text-base text-slate-500 mb-6 md:mb-10 flex-grow leading-relaxed">
+              Masukkan total tagihan dan rincian pembagian secara manual.
+            </p>
+            <button className="w-full text-center bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-3 md:py-4 rounded-xl md:rounded-2xl hover:opacity-90 transition shadow-lg shadow-blue-200/50 pointer-events-none">
+              Mulai Input
+            </button>
+          </div>
+
+          {/* CARD 2: SCAN STRUK */}
+          <div className="bg-white p-6 sm:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-start hover:shadow-xl transition-all duration-300 group cursor-pointer" onClick={() => alert("Fitur Scan Struk sedang dalam pengembangan!")}>
+            <div className="bg-gradient-to-br from-purple-300 to-pink-300 w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-inner group-hover:scale-105 transition-transform shrink-0">
+              <Camera className="text-white w-7 h-7 md:w-8 md:h-8" />
+            </div>
+            <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-3 flex-shrink-0">Scan Struk</h2>
+            <p className="text-sm md:text-base text-slate-500 mb-6 md:mb-10 flex-grow leading-relaxed">
+              Otomatis mendeteksi item dan harga dari foto struk (Coming Soon!).
+            </p>
+            <button className="w-full text-center border-2 border-pink-300 text-pink-500 font-bold py-3 md:py-4 rounded-xl md:rounded-2xl hover:bg-pink-50 transition pointer-events-none">
+              Pilih Scan Struk
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default InputMethod;

@@ -174,6 +174,7 @@ function Split() {
     sessionStorage.removeItem("split_currentStep");
     sessionStorage.removeItem("split_splitMethod");
     setCurrentStep(1);
+    navigate('/input-method');
   };
 
   return (
