@@ -16,7 +16,16 @@ function Step5({
   const handleShare = async () => {
     if (!receiptRef.current) return;
     try {
-      const blob = await toBlob(receiptRef.current, { cacheBust: true, backgroundColor: '#ffffff' });
+      const blob = await toBlob(receiptRef.current, {
+        style: {
+          padding: '30px',
+          width: '100%',
+          height: 'auto',
+        },
+        backgroundColor: '#ffffff',
+        scale: 2,
+        cacheBust: true,
+      });
       if (!blob) return;
       
       const file = new File([blob], 'split-bill-receipt.png', { type: 'image/png' });
