@@ -16,7 +16,11 @@ function Navbar() {
             </span>
         </div>
         <button
-            onClick={() => navigate('/login')}
+            onClick={() => {
+              sessionStorage.clear();
+              localStorage.clear();
+              navigate('/');
+            }}
             className="px-5 py-2 text-sm md:text-base bg-gradient-to-r from-pink-400 to-blue-400 hover:from-pink-500 hover:to-blue-500 text-white font-bold rounded-full shadow-md transition-all transform hover:-translate-y-0.5"
         >
             Log Out

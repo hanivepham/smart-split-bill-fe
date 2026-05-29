@@ -15,7 +15,8 @@ function App() {
     <BrowserRouter>
       <div className="overflow-x-hidden w-full max-w-[100vw] min-h-screen flex flex-col relative">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Login />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/features" element={<Features />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/input-method" element={<InputMethod />} />

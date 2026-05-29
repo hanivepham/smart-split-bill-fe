@@ -78,7 +78,7 @@ function Features() {
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col">
       {/* HEADER */}
       <header className="flex items-center gap-4 px-8 py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
-        <Link to="/" className="p-2 hover:bg-slate-100 rounded-full transition">
+        <Link to="/dashboard" className="p-2 hover:bg-slate-100 rounded-full transition">
           <ArrowLeft className="text-slate-600 w-5 h-5" />
         </Link>
         <div className="flex items-center gap-2">

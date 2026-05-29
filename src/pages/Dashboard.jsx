@@ -27,7 +27,7 @@ function Dashboard() {
                 <div className="flex items-center gap-2 md:gap-4 min-w-0">
 
                     {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2 min-w-0 hover:opacity-80 transition-opacity">
+                    <Link to="/dashboard" className="flex items-center gap-2 min-w-0 hover:opacity-80 transition-opacity">
                         <div className="bg-gradient-to-r from-pink-400 to-blue-400 p-1.5 rounded-lg shrink-0">
                             <Calculator className="text-white w-5 h-5" />
                         </div>
@@ -38,9 +38,9 @@ function Dashboard() {
                 </div>
 
                 <div className="shrink-0 ml-2">
-                    <Link to="/" className="p-2 flex items-center justify-center text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-all">
+                    <div onClick={() => navigate('/home')} className="cursor-pointer p-2 flex items-center justify-center text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-all">
                         <Home size={24} />
-                    </Link>
+                    </div>
                 </div>
             </header>
 
