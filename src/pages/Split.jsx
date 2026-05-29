@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { 
+import {
   ArrowLeft, Calculator, Check
 } from 'lucide-react';
 
@@ -13,12 +13,23 @@ import Step5 from '../components/split/Step5';
 function Split() {
   const navigate = useNavigate();
   const location = useLocation();
-  
-  const [totalTagihan, setTotalTagihan] = useState(() => {
-    const saved = sessionStorage.getItem("split_totalTagihan");
-    return saved ? JSON.parse(saved) : '';
+
+  const [billData, setBillData] = useState(() => {
+    const saved = sessionStorage.getItem("split_billData");
+    if (saved) return JSON.parse(saved);
+    const savedOld = sessionStorage.getItem("split_totalTagihan");
+    return {
+      subtotal: savedOld ? JSON.parse(savedOld) : '',
+      discount: '',
+      discountType: 'rp',
+      deliveryFee: '',
+      serviceFee: '',
+      packagingFee: '',
+      taxPercentage: '',
+      grandTotal: 0
+    };
   });
-  
+
   const [jumlahOrang, setJumlahOrang] = useState(() => {
     const saved = sessionStorage.getItem("split_jumlahOrang");
     return saved ? JSON.parse(saved) : 2;
@@ -40,8 +51,8 @@ function Split() {
   });
 
   useEffect(() => {
-    sessionStorage.setItem("split_totalTagihan", JSON.stringify(totalTagihan));
-  }, [totalTagihan]);
+    sessionStorage.setItem("split_billData", JSON.stringify(billData));
+  }, [billData]);
 
   useEffect(() => {
     sessionStorage.setItem("split_jumlahOrang", JSON.stringify(jumlahOrang));
@@ -60,7 +71,7 @@ function Split() {
   }, [splitMethod]);
 
   const handleLanjutStep1 = () => {
-    if (totalTagihan > 0 && jumlahOrang > 0) {
+    if (Number(billData.subtotal) > 0 && jumlahOrang > 0) {
       if (participants.length !== Number(jumlahOrang)) {
         const newParticipants = Array.from({ length: Number(jumlahOrang) }, (_, i) => ({
           id: i + 1,
@@ -107,24 +118,53 @@ function Split() {
   };
 
   const totalCustomSubtotal = participants.reduce((sum, p) => sum + getParticipantSubtotal(p), 0);
-  const isSubtotalMatch = totalCustomSubtotal === (Number(totalTagihan) || 0);
+  const isSubtotalMatch = totalCustomSubtotal === (Number(billData.subtotal) || 0);
 
-  const isCustomValid = isSubtotalMatch && participants.every(p => 
+  const isCustomValid = isSubtotalMatch && participants.every(p =>
     p.items && p.items.length > 0 && p.items.every(item => item.menu.trim() !== '' && Number(item.price) > 0)
   );
 
   const filledCount = participants.filter(p => p.name.trim() !== '').length;
   const isAllFilled = filledCount > 0 && filledCount === Number(jumlahOrang);
 
+  // Helper for pro-rata calculation
+  const getParticipantTotalBayar = (p) => {
+    const pSubtotal = getParticipantSubtotal(p);
+    const globalSubtotal = Number(billData.subtotal) || 0;
+    const porsi = globalSubtotal > 0 ? (pSubtotal / globalSubtotal) : 0;
+
+    const globalDiscountVal = Number(billData.discount) || 0;
+    let globalDiscount = 0;
+    if (billData.discountType === 'percent') {
+      globalDiscount = globalSubtotal * (globalDiscountVal / 100);
+    } else {
+      globalDiscount = globalDiscountVal;
+    }
+
+    const globalDelivery = Number(billData.deliveryFee) || 0;
+    const globalService = Number(billData.serviceFee) || 0;
+    const globalPackaging = Number(billData.packagingFee) || 0;
+    const globalTaxPercent = Number(billData.taxPercentage) || 0;
+    const globalTax = (globalSubtotal - globalDiscount) * (globalTaxPercent / 100);
+
+    const diskonOrang = globalDiscount * porsi;
+    const ongkirOrang = globalDelivery * porsi;
+    const serviceOrang = globalService * porsi;
+    const packagingOrang = globalPackaging * porsi;
+    const pajakOrang = globalTax * porsi;
+
+    return pSubtotal - diskonOrang + ongkirOrang + serviceOrang + packagingOrang + pajakOrang;
+  };
+
   const handleShare = () => {
-    let text = `📊 Hasil Pembagian Tagihan\n\nGrand Total: Rp ${new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}\n\n`;
+    let text = `📊 Hasil Pembagian Tagihan\n\nGrand Total: Rp ${new Intl.NumberFormat('id-ID').format(billData.grandTotal || 0)}\n\n`;
     participants.forEach((p, i) => {
-      const name = p.name || `Orang ${i+1}`;
+      const name = p.name || `Orang ${i + 1}`;
       if (splitMethod === 'rata') {
-        const perPerson = (Number(totalTagihan) || 0) / participants.length;
+        const perPerson = (billData.grandTotal || 0) / participants.length;
         text += `${name}: Rp ${new Intl.NumberFormat('id-ID').format(perPerson || 0)}\n`;
       } else {
-        const personTotal = p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
+        const personTotal = getParticipantTotalBayar(p);
         text += `${name}: Rp ${new Intl.NumberFormat('id-ID').format(personTotal || 0)}\n`;
       }
     });
@@ -138,37 +178,37 @@ function Split() {
       id: Date.now(),
       date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
       time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-      total: totalTagihan,
+      total: billData.grandTotal,
       peopleCount: participants.length,
       method: splitMethod === 'rata' ? 'Split Rata' : 'Custom Split',
       details: participants.map((p, i) => {
-        const name = p.name || `Orang ${i+1}`;
+        const name = p.name || `Orang ${i + 1}`;
         if (splitMethod === 'rata') {
-          return { name, amount: (Number(totalTagihan) || 0) / participants.length };
+          return { name, amount: (billData.grandTotal || 0) / participants.length };
         } else {
-          const amount = p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
-          return { name, amount };
+          return { name, amount: getParticipantTotalBayar(p) };
         }
       }),
       originalData: {
-        totalTagihan,
+        billData,
         jumlahOrang,
         participants,
         splitMethod
       }
     };
-    // Mengambil dari split_history sesuai instruksi
     const existing = JSON.parse(localStorage.getItem('split_history') || localStorage.getItem('splitHistory') || '[]');
     localStorage.setItem('split_history', JSON.stringify([newRecord, ...existing]));
     alert('Berhasil disimpan ke riwayat!');
   };
 
   const handleReset = () => {
-    setTotalTagihan('');
+    setBillData({
+      subtotal: '', discount: '', discountType: 'rp', deliveryFee: '', serviceFee: '', packagingFee: '', taxPercentage: '', grandTotal: 0
+    });
     setJumlahOrang(2);
     setParticipants([]);
     setSplitMethod('rata');
-    sessionStorage.removeItem("split_totalTagihan");
+    sessionStorage.removeItem("split_billData");
     sessionStorage.removeItem("split_jumlahOrang");
     sessionStorage.removeItem("split_participants");
     sessionStorage.removeItem("split_currentStep");
@@ -185,14 +225,14 @@ function Split() {
             <ArrowLeft className="text-slate-600 w-5 h-5" />
           </Link>
         ) : (
-          <button 
+          <button
             onClick={() => {
               if (currentStep === 5 && location.state?.fromHistory) {
                 navigate('/history');
               } else {
                 setCurrentStep(currentStep - 1);
               }
-            }} 
+            }}
             className="p-2 hover:bg-slate-100 rounded-full transition shrink-0"
           >
             <ArrowLeft className="text-slate-600 w-5 h-5" />
@@ -214,25 +254,22 @@ function Split() {
             {[1, 2, 3, 4, 5].map((step, index) => (
               <React.Fragment key={step}>
                 <div className={`flex flex-col items-center ${currentStep < step ? 'opacity-50' : ''}`}>
-                  <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-all duration-300 text-sm md:text-base ${
-                    currentStep > step 
-                      ? 'bg-gradient-to-r from-pink-400 to-blue-400 text-white' 
-                      : currentStep === step 
+                  <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-all duration-300 text-sm md:text-base ${currentStep > step
+                      ? 'bg-gradient-to-r from-pink-400 to-blue-400 text-white'
+                      : currentStep === step
                         ? 'bg-gradient-to-r from-purple-300 to-blue-300 text-white'
                         : 'bg-white border-2 border-slate-200 text-slate-400'
-                  }`}>
+                    }`}>
                     {currentStep > step ? <Check className="w-4 h-4 md:w-6 md:h-6" /> : step}
                   </div>
-                  <span className={`text-[10px] md:text-xs mt-1 md:mt-2 transition-colors duration-300 ${
-                    currentStep > step ? 'text-pink-500 font-bold' : currentStep === step ? 'text-purple-500 font-bold' : 'text-slate-400 font-medium'
-                  }`}>
+                  <span className={`text-[10px] md:text-xs mt-1 md:mt-2 transition-colors duration-300 ${currentStep > step ? 'text-pink-500 font-bold' : currentStep === step ? 'text-purple-500 font-bold' : 'text-slate-400 font-medium'
+                    }`}>
                     Step {step}
                   </span>
                 </div>
                 {index < 4 && (
-                  <div className={`w-4 sm:w-8 md:w-12 h-[2px] mb-4 md:mb-6 mx-1 md:mx-2 transition-colors duration-300 ${
-                    currentStep > step ? 'bg-gradient-to-r from-pink-400 to-blue-300' : 'bg-slate-200'
-                  }`}></div>
+                  <div className={`w-4 sm:w-8 md:w-12 h-[2px] mb-4 md:mb-6 mx-1 md:mx-2 transition-colors duration-300 ${currentStep > step ? 'bg-gradient-to-r from-pink-400 to-blue-300' : 'bg-slate-200'
+                    }`}></div>
                 )}
               </React.Fragment>
             ))}
@@ -241,9 +278,9 @@ function Split() {
 
         {/* STEP 1 */}
         {currentStep === 1 && (
-          <Step1 
-            totalTagihan={totalTagihan}
-            setTotalTagihan={setTotalTagihan}
+          <Step1
+            billData={billData}
+            setBillData={setBillData}
             jumlahOrang={jumlahOrang}
             setJumlahOrang={setJumlahOrang}
             onNext={handleLanjutStep1}
@@ -252,7 +289,7 @@ function Split() {
 
         {/* STEP 2 */}
         {currentStep === 2 && (
-          <Step2 
+          <Step2
             jumlahOrang={jumlahOrang}
             participants={participants}
             setParticipants={setParticipants}
@@ -266,7 +303,7 @@ function Split() {
 
         {/* STEP 3 */}
         {currentStep === 3 && (
-          <Step3 
+          <Step3
             splitMethod={splitMethod}
             setSplitMethod={setSplitMethod}
             onNext={() => setCurrentStep(4)}
@@ -276,9 +313,9 @@ function Split() {
 
         {/* STEP 4 */}
         {currentStep === 4 && (
-          <Step4 
+          <Step4
             splitMethod={splitMethod}
-            totalTagihan={totalTagihan}
+            billData={billData}
             participants={participants}
             handleItemChange={handleItemChange}
             handleRemoveItem={handleRemoveItem}
@@ -294,8 +331,8 @@ function Split() {
 
         {/* STEP 5 */}
         {currentStep === 5 && (
-          <Step5 
-            totalTagihan={totalTagihan}
+          <Step5
+            billData={billData}
             participants={participants}
             splitMethod={splitMethod}
             handleShare={handleShare}

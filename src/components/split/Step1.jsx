@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   Receipt, 
   Users, 
@@ -10,12 +10,57 @@ import {
 } from 'lucide-react';
 
 function Step1({
-  totalTagihan,
-  setTotalTagihan,
+  billData,
+  setBillData,
   jumlahOrang,
   setJumlahOrang,
   onNext
 }) {
+
+  // Kalkulasi Real-time Grand Total
+  useEffect(() => {
+    const subtotal = Number(billData.subtotal) || 0;
+    const discountVal = Number(billData.discount) || 0;
+    
+    let discountAmt = 0;
+    if (billData.discountType === 'percent') {
+      discountAmt = subtotal * (discountVal / 100);
+    } else {
+      discountAmt = discountVal;
+    }
+
+    const deliveryFee = Number(billData.deliveryFee) || 0;
+    const serviceFee = Number(billData.serviceFee) || 0;
+    const packagingFee = Number(billData.packagingFee) || 0;
+    const taxPercentage = Number(billData.taxPercentage) || 0;
+
+    const baseForTax = subtotal - discountAmt;
+    const taxAmt = baseForTax * (taxPercentage / 100);
+    
+    const grandTotal = subtotal - discountAmt + deliveryFee + serviceFee + packagingFee + taxAmt;
+
+    if (billData.grandTotal !== grandTotal) {
+      setBillData(prev => ({ ...prev, grandTotal }));
+    }
+  }, [
+    billData.subtotal, 
+    billData.discount, 
+    billData.discountType, 
+    billData.deliveryFee, 
+    billData.serviceFee, 
+    billData.packagingFee, 
+    billData.taxPercentage
+  ]);
+
+  const handleChange = (field, value) => {
+    setBillData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const subtotal = Number(billData.subtotal) || 0;
+  const discountVal = Number(billData.discount) || 0;
+  const discountAmt = billData.discountType === 'percent' ? subtotal * (discountVal / 100) : discountVal;
+  const taxAmt = (subtotal - discountAmt) * ((Number(billData.taxPercentage) || 0) / 100);
+
   return (
     <div className="bg-white p-4 sm:p-6 md:p-10 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100">
       <div className="mb-6 md:mb-8">
@@ -35,8 +80,8 @@ function Step1({
           <input 
             type="number" 
             placeholder="Contoh: 500000" 
-            value={totalTagihan}
-            onChange={(e) => setTotalTagihan(e.target.value)}
+            value={billData.subtotal}
+            onChange={(e) => handleChange('subtotal', e.target.value)}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
           />
         </div>
@@ -74,10 +119,16 @@ function Step1({
           <div className="flex gap-2 md:gap-3 min-w-0">
             <input 
               type="number" 
-              placeholder="Contoh: 50000" 
+              placeholder="Contoh: 50000 atau 10" 
+              value={billData.discount}
+              onChange={(e) => handleChange('discount', e.target.value)}
               className="flex-1 min-w-0 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 md:px-4 md:py-3 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-green-300 transition"
             />
-            <select className="bg-white border border-slate-200 rounded-xl px-2 md:px-4 py-2 md:py-3 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-green-300 font-medium text-slate-700 outline-none cursor-pointer shrink-0">
+            <select 
+              value={billData.discountType}
+              onChange={(e) => handleChange('discountType', e.target.value)}
+              className="bg-white border border-slate-200 rounded-xl px-2 md:px-4 py-2 md:py-3 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-green-300 font-medium text-slate-700 outline-none cursor-pointer shrink-0"
+            >
               <option value="rp">Rp</option>
               <option value="percent">%</option>
             </select>
@@ -93,6 +144,8 @@ function Step1({
           <input 
             type="number" 
             placeholder="Contoh: 15000" 
+            value={billData.deliveryFee}
+            onChange={(e) => handleChange('deliveryFee', e.target.value)}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
           />
         </div>
@@ -106,6 +159,8 @@ function Step1({
           <input 
             type="number" 
             placeholder="Contoh: 5000" 
+            value={billData.serviceFee}
+            onChange={(e) => handleChange('serviceFee', e.target.value)}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-300 transition"
           />
         </div>
@@ -119,6 +174,8 @@ function Step1({
           <input 
             type="number" 
             placeholder="Contoh: 2000" 
+            value={billData.packagingFee}
+            onChange={(e) => handleChange('packagingFee', e.target.value)}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-300 transition"
           />
         </div>
@@ -132,30 +189,71 @@ function Step1({
           <input 
             type="number" 
             placeholder="Contoh: 10" 
+            value={billData.taxPercentage}
+            onChange={(e) => handleChange('taxPercentage', e.target.value)}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-fuchsia-300 transition"
           />
           <p className="text-xs text-slate-400 mt-2 ml-1">Pajak akan dihitung setelah semua penyesuaian</p>
         </div>
 
-        {/* Preview Perhitungan (Hanya muncul jika totalTagihan diisi) */}
-        {totalTagihan > 0 && (
+        {/* Preview Perhitungan (Hanya muncul jika subtotal diisi) */}
+        {Number(billData.subtotal) > 0 && (
           <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 mt-8 mb-6">
             <h4 className="font-bold text-slate-700 mb-4">Preview Perhitungan</h4>
-            <div className="flex justify-between text-sm text-slate-600 mb-3">
-              <span>Subtotal Makanan</span>
-              <span>Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}</span>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm text-slate-600">
+                <span>Subtotal Makanan</span>
+                <span>Rp {new Intl.NumberFormat('id-ID').format(subtotal)}</span>
+              </div>
+              
+              {discountAmt > 0 && (
+                <div className="flex justify-between text-sm text-green-600 font-medium">
+                  <span>Diskon {billData.discountType === 'percent' ? `(${billData.discount}%)` : ''}</span>
+                  <span>- Rp {new Intl.NumberFormat('id-ID').format(discountAmt)}</span>
+                </div>
+              )}
+              
+              {Number(billData.deliveryFee) > 0 && (
+                <div className="flex justify-between text-sm text-slate-600">
+                  <span>Ongkos Kirim</span>
+                  <span>+ Rp {new Intl.NumberFormat('id-ID').format(Number(billData.deliveryFee))}</span>
+                </div>
+              )}
+
+              {Number(billData.serviceFee) > 0 && (
+                <div className="flex justify-between text-sm text-slate-600">
+                  <span>Biaya Layanan</span>
+                  <span>+ Rp {new Intl.NumberFormat('id-ID').format(Number(billData.serviceFee))}</span>
+                </div>
+              )}
+
+              {Number(billData.packagingFee) > 0 && (
+                <div className="flex justify-between text-sm text-slate-600">
+                  <span>Biaya Kemasan</span>
+                  <span>+ Rp {new Intl.NumberFormat('id-ID').format(Number(billData.packagingFee))}</span>
+                </div>
+              )}
+
+              {taxAmt > 0 && (
+                <div className="flex justify-between text-sm text-slate-600">
+                  <span>Pajak ({billData.taxPercentage}%)</span>
+                  <span>+ Rp {new Intl.NumberFormat('id-ID').format(taxAmt)}</span>
+                </div>
+              )}
             </div>
+
             <div className="border-t border-pink-100 my-3"></div>
             <div className="flex justify-between font-bold text-pink-500 text-lg">
               <span>Grand Total</span>
-              <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}</span>
+              <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(billData.grandTotal || 0)}</span>
             </div>
           </div>
         )}
 
         {/* Tombol Lanjut */}
-        <div className={totalTagihan > 0 && jumlahOrang > 1 ? "pt-2" : "pt-8"}>
-          {totalTagihan > 0 && jumlahOrang > 1 ? (
+        <div className={Number(billData.subtotal) > 0 && jumlahOrang > 1 ? "pt-2" : "pt-8"}>
+          {Number(billData.subtotal) > 0 && jumlahOrang > 1 ? (
             <button 
               type="button"
               onClick={onNext}
@@ -179,3 +277,4 @@ function Step1({
 }
 
 export default Step1;
+

@@ -3,7 +3,7 @@ import { toBlob } from 'html-to-image';
 import { CheckCircle, Share2, Save, RotateCcw, Home, Wallet, QrCode } from 'lucide-react';
 
 function Step5({
-  totalTagihan,
+  billData,
   participants,
   splitMethod,
   onSave,
@@ -17,21 +17,19 @@ function Step5({
     if (!receiptRef.current) return;
     try {
       const blob = await toBlob(receiptRef.current, {
-        // Tambahkan padding internal untuk membuat konten terlihat di tengah bingkai yang rapi
         style: {
-          padding: '30px', // Sesuaikan nilainya (misal 20px - 40px) untuk margin yang pas
+          padding: '30px',
           width: '100%',
           height: 'auto',
         },
-        backgroundColor: '#ffffff', // Pastikan background tetap putih bersih
-        scale: 2, // Tingkatkan skala untuk resolusi yang lebih tajam di semua device
+        backgroundColor: '#ffffff',
+        scale: 2,
         cacheBust: true,
       });
       if (!blob) return;
       
       const file = new File([blob], 'split-bill-receipt.png', { type: 'image/png' });
       
-      // Cek apakah browser mendukung Web Share API beserta file sharing
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           title: 'Tagihan Split Bill',
@@ -39,7 +37,6 @@ function Step5({
           files: [file]
         });
       } else {
-        // Fallback otomatis download jika di PC yang tidak support Web Share
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -50,6 +47,35 @@ function Step5({
     } catch (error) {
       console.error('Gagal membagikan struk:', error);
     }
+  };
+
+  // Helper for pro-rata calculation
+  const getParticipantTotalBayar = (p) => {
+    const pSubtotal = p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
+    const globalSubtotal = Number(billData.subtotal) || 0;
+    const porsi = globalSubtotal > 0 ? (pSubtotal / globalSubtotal) : 0;
+    
+    const globalDiscountVal = Number(billData.discount) || 0;
+    let globalDiscount = 0;
+    if (billData.discountType === 'percent') {
+      globalDiscount = globalSubtotal * (globalDiscountVal / 100);
+    } else {
+      globalDiscount = globalDiscountVal;
+    }
+    
+    const globalDelivery = Number(billData.deliveryFee) || 0;
+    const globalService = Number(billData.serviceFee) || 0;
+    const globalPackaging = Number(billData.packagingFee) || 0;
+    const globalTaxPercent = Number(billData.taxPercentage) || 0;
+    const globalTax = (globalSubtotal - globalDiscount) * (globalTaxPercent / 100);
+    
+    const diskonOrang = globalDiscount * porsi;
+    const ongkirOrang = globalDelivery * porsi;
+    const serviceOrang = globalService * porsi;
+    const packagingOrang = globalPackaging * porsi;
+    const pajakOrang = globalTax * porsi;
+    
+    return pSubtotal - diskonOrang + ongkirOrang + serviceOrang + packagingOrang + pajakOrang;
   };
 
   return (
@@ -65,11 +91,11 @@ function Step5({
         <h3 className="font-bold text-slate-800 mb-4">Total Tagihan</h3>
         <div className="flex justify-between text-sm text-slate-500 mb-4">
           <span>Subtotal Makanan</span>
-          <span>Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}</span>
+          <span>Rp {new Intl.NumberFormat('id-ID').format(Number(billData.subtotal) || 0)}</span>
         </div>
         <div className="border-t border-slate-200 pt-4 flex justify-between items-center font-bold">
           <span className="text-slate-800">Grand Total</span>
-          <span className="text-xl text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(Number(totalTagihan) || 0)}</span>
+          <span className="text-xl text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(Number(billData.grandTotal) || 0)}</span>
         </div>
       </div>
       
@@ -81,7 +107,7 @@ function Step5({
         <div className="space-y-4">
           {participants.map((p, i) => {
             if (splitMethod === 'rata') {
-              const perPerson = (Number(totalTagihan) || 0) / participants.length;
+              const perPerson = (Number(billData.grandTotal) || 0) / participants.length;
               return (
                 <div key={p.id} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
                   {i === 0 && (
@@ -101,7 +127,7 @@ function Step5({
                     <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson || 0)}</span>
                   </div>
                   <div className="flex justify-between text-sm text-slate-500 mb-4">
-                    <span>Subtotal Makanan</span>
+                    <span>Bagian (Semua Termasuk)</span>
                     <span>Rp {new Intl.NumberFormat('id-ID').format(perPerson || 0)}</span>
                   </div>
                   <div className="border-t border-slate-100 pt-4 flex justify-between items-center text-xs font-bold">
@@ -111,8 +137,11 @@ function Step5({
                 </div>
               );
             } else {
-              const personTotal = p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
-              const porsi = totalTagihan > 0 ? ((personTotal / totalTagihan) * 100).toFixed(1) : 0;
+              const pSubtotal = p.items?.reduce((sum, item) => sum + (Number(item.price) || 0), 0) || 0;
+              const globalSubtotal = Number(billData.subtotal) || 0;
+              const porsi = globalSubtotal > 0 ? ((pSubtotal / globalSubtotal) * 100).toFixed(1) : 0;
+              const totalBayar = getParticipantTotalBayar(p);
+              
               return (
                 <div key={p.id} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
                   {i === 0 && (
@@ -129,7 +158,7 @@ function Step5({
                   )}
                   <div className="flex justify-between font-bold mb-1">
                     <span className="text-slate-800">{p.name || `Orang ${i+1}`}</span>
-                    <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(personTotal || 0)}</span>
+                    <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(totalBayar || 0)}</span>
                   </div>
                   <div className="text-xs text-slate-400 mb-4">Porsi: {porsi}%</div>
                   {p.items && p.items.length > 0 && (
@@ -145,11 +174,11 @@ function Step5({
                   )}
                   <div className="flex justify-between text-sm text-slate-500 mb-4 border-t border-slate-100 pt-4">
                     <span>Subtotal Makanan</span>
-                    <span>Rp {new Intl.NumberFormat('id-ID').format(personTotal || 0)}</span>
+                    <span>Rp {new Intl.NumberFormat('id-ID').format(pSubtotal || 0)}</span>
                   </div>
                   <div className="border-t border-slate-100 pt-4 flex justify-between items-center text-xs font-bold">
                     <span className="text-slate-800">Total Bayar</span>
-                    <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(personTotal || 0)}</span>
+                    <span className="text-pink-500">Rp {new Intl.NumberFormat('id-ID').format(totalBayar || 0)}</span>
                   </div>
                 </div>
               );
