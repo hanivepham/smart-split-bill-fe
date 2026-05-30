@@ -1,35 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calculator, CalendarDays } from 'lucide-react';
+import { ArrowLeft, Calculator, CalendarDays, Loader2 } from 'lucide-react';
 import HistoryCard from '../components/history/HistoryCard';
+import api from '../api'; // IMPORT KURIR AXIOS
 
 function History() {
-  const [history, setHistory] = useState(() => {
-    try {
-      const saved = localStorage.getItem('split_history') || localStorage.getItem('splitHistory');
-      return saved ? JSON.parse(saved) : [];
-    } catch (error) {
-      console.error('Failed to parse history:', error);
-      return [];
-    }
-  });
+  const [history, setHistory] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
+  const [loading, setLoading] = useState(true); // Tambah state loading
   const navigate = useNavigate();
 
-  const handleDelete = (id) => {
-    const filtered = history.filter(item => item.id !== id);
-    setHistory(filtered);
-    localStorage.setItem('split_history', JSON.stringify(filtered));
+  // --- FUNGSI BARU: MENARIK DATA DARI DATABASE LARAVEL ---
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const response = await api.get('/bills');
+        setHistory(response.data.data); // Simpan data dari Laravel ke state history
+      } catch (error) {
+        console.error('Failed to fetch history from database:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []); // Kosong = dipanggil sekali saat halaman dibuka
+
+  // --- FUNGSI MENGHAPUS DATA (Bonus: Nembak ke Laravel) ---
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Yakin ingin menghapus tagihan ini?");
+    if (!confirmDelete) return;
+
+    try {
+      // Tembak API Delete ke Laravel
+      await api.delete(`/bills/${id}`);
+
+      // Hapus dari tampilan layar
+      const filtered = history.filter(item => item.id !== id);
+      setHistory(filtered);
+    } catch (error) {
+      console.error('Gagal menghapus tagihan:', error);
+      alert('Gagal menghapus tagihan dari database.');
+    }
   };
 
   const handleStartNewSplit = () => {
+    // Kodingan reset lo tetap aman
     sessionStorage.removeItem("split_currentStep");
     sessionStorage.removeItem("split_billData");
     sessionStorage.removeItem("split_participants");
     sessionStorage.removeItem("split_method");
     sessionStorage.removeItem("split_customSplits");
-    
-    // Sesuaikan juga dengan kunci dari versi yang lebih baru
     sessionStorage.removeItem("split_totalTagihan");
     sessionStorage.removeItem("split_jumlahOrang");
     sessionStorage.removeItem("split_splitMethod");
@@ -39,7 +60,7 @@ function History() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col">
-      {/* HEADER */}
+      {/* HEADER TETAP SAMA */}
       <header className="flex items-center gap-2 md:gap-4 px-4 py-4 md:px-8 md:py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         <Link to="/dashboard" className="p-2 hover:bg-slate-100 rounded-full transition shrink-0">
           <ArrowLeft className="text-slate-600 w-5 h-5" />
@@ -56,8 +77,6 @@ function History() {
 
       {/* MAIN CONTENT */}
       <main className="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 md:py-12">
-        
-        {/* Page Title */}
         <div className="mb-8 md:mb-10">
           <h1 className="text-2xl md:text-4xl font-bold text-pink-500 mb-2 md:mb-3">
             Riwayat Tagihan
@@ -65,21 +84,23 @@ function History() {
           <p className="text-sm md:text-base text-slate-500">Lihat dan kelola riwayat pembagian tagihan Anda</p>
         </div>
 
-        {history.length === 0 ? (
-          /* Empty State Card */
+        {/* LOADING STATE (Baru) */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-10 h-10 text-blue-500 animate-spin mb-4" />
+            <p className="text-slate-500">Memuat data dari database...</p>
+          </div>
+        ) : history.length === 0 ? (
+          /* Empty State Card (TETAP SAMA) */
           <div className="bg-white p-8 md:p-16 rounded-3xl md:rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
-            
-            {/* Icon Container */}
             <div className="bg-gradient-to-br from-purple-200 to-blue-200 w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center mb-6 shrink-0">
               <CalendarDays className="text-slate-500 w-10 h-10 md:w-12 md:h-12 opacity-70" />
             </div>
-            
             <h2 className="text-xl md:text-2xl font-bold text-slate-700 mb-2 md:mb-3">Belum Ada Riwayat</h2>
             <p className="text-sm md:text-base text-slate-500 mb-8 max-w-md">
               Mulai buat pembagian tagihan untuk melihat riwayat
             </p>
-            
-            <button 
+            <button
               onClick={handleStartNewSplit}
               className="bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-3 px-6 md:px-8 rounded-full hover:opacity-90 transition shadow-md shadow-blue-200/50 text-sm md:text-base"
             >
@@ -87,7 +108,7 @@ function History() {
             </button>
           </div>
         ) : (
-          /* Jika Ada Riwayat */
+          /* Jika Ada Riwayat (TETAP SAMA, pakai komponen lo) */
           <div className="space-y-4">
             {history.map(bill => (
               <HistoryCard

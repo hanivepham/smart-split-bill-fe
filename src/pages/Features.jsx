@@ -1,16 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Calculator, 
-  Receipt, 
-  Scan, 
-  Users, 
-  Split, 
-  PenTool, 
-  Percent, 
-  History, 
-  Share2 
+import {
+  ArrowLeft,
+  Calculator,
+  Receipt,
+  Scan,
+  Users,
+  Split,
+  PenTool,
+  Percent,
+  History,
+  Share2
 } from 'lucide-react';
 import FeatureCard from '../components/features/FeatureCard';
 
@@ -105,13 +105,13 @@ function Features() {
         {/* GRID FITUR */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
           {featuresList.map((feature, index) => (
-            <FeatureCard 
-              key={index} 
+            <FeatureCard
+              key={index}
               icon={feature.icon}
               bgClass={feature.bgClass}
               iconClass={feature.iconClass}
-              title={feature.title} 
-              description={feature.description} 
+              title={feature.title}
+              description={feature.description}
             />
           ))}
         </div>
