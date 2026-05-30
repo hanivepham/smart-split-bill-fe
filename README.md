@@ -1,16 +1,29 @@
-# React + Vite
+# 💸 Smart Bill Splitter - Backend API (Kelompok 6)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Ini adalah *source code* Backend untuk aplikasi **Smart Bill Splitter**, dibangun menggunakan framework **Laravel 11**. API ini berfungsi untuk mengelola data tagihan patungan (split bill) dan menghitung rincian pembagian tagihan per partisipan.
 
-Currently, two official plugins are available:
+## 🚀 Cara Menjalankan Project di Laptop Kalian (Lokal)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Buat anggota kelompok yang baru pertama kali *clone* repository ini, ikuti langkah-langkah wajib berikut agar API bisa menyala:
 
-## React Compiler
+1. **Clone Repository**
+   `git clone https://github.com/hanivepham/smart-split-bill-be.git`
+   `cd smart-split-bill-be`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+2. **Install Dependencies (Alat-alat Laravel)**
+   `composer install`
 
-## Expanding the ESLint configuration
+3. **Setup File Environment**
+   `cp .env.example .env`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+4. **Generate Application Key**
+   `php artisan key:generate`
+
+5. **Konfigurasi Database**
+   Buat database kosong bernama `smart_bill_splitter` di Laragon. Lalu pastikan `.env` sesuai.
+
+6. **Migrasi Database (Membuat Tabel)**
+   `php artisan migrate`
+
+7. **Nyalakan Server API**
+   `php artisan serve`
