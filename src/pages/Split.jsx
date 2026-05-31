@@ -255,10 +255,10 @@ function Split() {
               <React.Fragment key={step}>
                 <div className={`flex flex-col items-center ${currentStep < step ? 'opacity-50' : ''}`}>
                   <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold shadow-md transition-all duration-300 text-sm md:text-base ${currentStep > step
-                      ? 'bg-gradient-to-r from-pink-400 to-blue-400 text-white'
-                      : currentStep === step
-                        ? 'bg-gradient-to-r from-purple-300 to-blue-300 text-white'
-                        : 'bg-white border-2 border-slate-200 text-slate-400'
+                    ? 'bg-gradient-to-r from-pink-400 to-blue-400 text-white'
+                    : currentStep === step
+                      ? 'bg-gradient-to-r from-purple-300 to-blue-300 text-white'
+                      : 'bg-white border-2 border-slate-200 text-slate-400'
                     }`}>
                     {currentStep > step ? <Check className="w-4 h-4 md:w-6 md:h-6" /> : step}
                   </div>

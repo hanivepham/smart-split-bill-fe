@@ -17,7 +17,7 @@ function Dashboard() {
         sessionStorage.removeItem("split_jumlahOrang");
         sessionStorage.removeItem("split_splitMethod");
 
-        navigate('/input-method');
+        navigate('/split');
     };
 
     return (

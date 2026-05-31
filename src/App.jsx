@@ -8,7 +8,6 @@ import History from './pages/History';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Payment from './pages/Payment';
-import InputMethod from './pages/InputMethod';
 
 function App() {
   return (
@@ -19,7 +18,6 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/features" element={<Features />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/input-method" element={<InputMethod />} />
           <Route path="/split" element={<Split />} />
           <Route path="/history" element={<History />} />
           <Route path="/login" element={<Login />} />

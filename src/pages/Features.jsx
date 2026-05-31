@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Calculator,
   Receipt,
-  Scan,
   Users,
   Split,
   PenTool,
@@ -23,13 +22,7 @@ function Features() {
       title: 'Input Tagihan',
       description: 'Masukkan total tagihan dengan mudah. Tambahkan PPN dan service charge secara otomatis untuk perhitungan yang akurat.'
     },
-    {
-      icon: Scan,
-      bgClass: 'bg-blue-100',
-      iconClass: 'text-blue-500',
-      title: 'Scan Struk (OCR)',
-      description: 'Upload foto struk belanja Anda dan biarkan sistem otomatis mengenali item dan harga. (Fitur dalam pengembangan).'
-    },
+
     {
       icon: Users,
       bgClass: 'bg-purple-100',
