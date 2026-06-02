@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calculator, CalendarDays, Loader2 } from 'lucide-react';
+import { ArrowLeft, Calculator, CalendarDays, Loader2, Trash2 } from 'lucide-react';
 import HistoryCard from '../components/history/HistoryCard';
 import api from '../api';
 
@@ -39,6 +39,19 @@ function History() {
     }
   };
 
+  const handleDeleteAll = async () => {
+    const confirmDelete = window.confirm("Yakin ingin menghapus semua riwayat tagihan? Aksi ini tidak dapat dibatalkan.");
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete('/bills/delete-all');
+      setHistory([]);
+    } catch (error) {
+      console.error('Gagal menghapus semua tagihan:', error);
+      alert('Gagal menghapus semua tagihan dari database.');
+    }
+  };
+
   const handleStartNewSplit = () => {
     // Bersihkan memori lama biar mulai dari nol
     sessionStorage.removeItem("split_currentStep");
@@ -71,11 +84,21 @@ function History() {
       </header>
 
       <main className="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 md:py-12">
-        <div className="mb-8 md:mb-10">
-          <h1 className="text-2xl md:text-4xl font-bold text-pink-500 mb-2 md:mb-3">
-            Riwayat Tagihan
-          </h1>
-          <p className="text-sm md:text-base text-slate-500">Lihat dan kelola riwayat pembagian tagihan Anda</p>
+        <div className="mb-8 md:mb-10 flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
+          <div>
+            <h1 className="text-2xl md:text-4xl font-bold text-pink-500 mb-2 md:mb-3">
+              Riwayat Tagihan
+            </h1>
+            <p className="text-sm md:text-base text-slate-500">Lihat dan kelola riwayat pembagian tagihan Anda</p>
+          </div>
+          {history.length > 0 && !loading && (
+            <button
+              onClick={handleDeleteAll}
+              className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-red-500 bg-red-50 hover:bg-red-100 rounded-xl transition-colors font-semibold shadow-sm w-full md:w-auto"
+            >
+              <Trash2 className="w-4 h-4" /> Hapus Semua
+            </button>
+          )}
         </div>
 
         {loading ? (

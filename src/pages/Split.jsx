@@ -9,6 +9,7 @@ import Step2 from '../components/split/Step2';
 import Step3 from '../components/split/Step3';
 import Step4 from '../components/split/Step4';
 import Step5 from '../components/split/Step5';
+import PaymentMethodInput from './PaymentMethodInput';
 
 function Split() {
   const navigate = useNavigate();
@@ -49,6 +50,8 @@ function Split() {
     const saved = sessionStorage.getItem("split_splitMethod");
     return saved ? JSON.parse(saved) : 'rata';
   });
+
+  const [paymentData, setPaymentData] = useState({ type: 'rekening' });
 
   useEffect(() => {
     sessionStorage.setItem("split_billData", JSON.stringify(billData));
@@ -213,9 +216,48 @@ function Split() {
     sessionStorage.removeItem("split_participants");
     sessionStorage.removeItem("split_currentStep");
     sessionStorage.removeItem("split_splitMethod");
+    setPaymentData({ type: 'rekening' });
     setCurrentStep(1);
     navigate('/input-method');
   };
+
+  const isViewingHistory = location.state?.isViewingHistory;
+  const historyBillData = location.state?.billData;
+  const historyPaymentData = location.state?.paymentData;
+
+  if (isViewingHistory) {
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12">
+        <header className="flex items-center gap-2 md:gap-4 px-4 py-4 md:px-8 md:py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
+          <button onClick={() => navigate('/history')} className="p-2 hover:bg-slate-100 rounded-full transition shrink-0">
+            <ArrowLeft className="text-slate-600 w-5 h-5" />
+          </button>
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="bg-gradient-to-r from-pink-400 to-blue-400 p-1.5 rounded-lg shrink-0">
+              <Calculator className="text-white w-5 h-5" />
+            </div>
+            <span className="font-bold text-base md:text-lg bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500 truncate min-w-0">
+              Riwayat Pembagian
+            </span>
+          </div>
+        </header>
+        <main className="max-w-3xl mx-auto w-full px-4 sm:px-6 pt-6">
+          <Step5
+            billData={historyBillData || billData}
+            participants={participants}
+            splitMethod={splitMethod}
+            paymentData={historyPaymentData || paymentData}
+            handleShare={handleShare}
+            onSave={() => {}}
+            handleReset={() => {}}
+            navigate={navigate}
+            onPrev={() => navigate('/history')}
+            isViewingHistory={true}
+          />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12">
@@ -227,7 +269,7 @@ function Split() {
         ) : (
           <button
             onClick={() => {
-              if (currentStep === 5 && location.state?.fromHistory) {
+              if (currentStep === 6 && location.state?.fromHistory) {
                 navigate('/history');
               } else {
                 setCurrentStep(currentStep - 1);
@@ -329,17 +371,28 @@ function Split() {
           />
         )}
 
-        {/* STEP 5 */}
+        {/* STEP 5: Input Metode Pembayaran */}
         {currentStep === 5 && (
+          <PaymentMethodInput
+            paymentData={paymentData}
+            setPaymentData={setPaymentData}
+            onNext={() => setCurrentStep(6)}
+            onPrev={() => setCurrentStep(4)}
+          />
+        )}
+
+        {/* STEP 6: Ringkasan Selesai */}
+        {currentStep === 6 && (
           <Step5
             billData={billData}
             participants={participants}
             splitMethod={splitMethod}
+            paymentData={paymentData}
             handleShare={handleShare}
             onSave={handleSimpan}
             handleReset={handleReset}
             navigate={navigate}
-            onPrev={() => setCurrentStep(4)}
+            onPrev={() => setCurrentStep(5)}
           />
         )}
       </main>

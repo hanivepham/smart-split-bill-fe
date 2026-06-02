@@ -106,9 +106,24 @@ function HistoryCard({ bill, isExpanded, onToggle, onDelete }) {
                 sessionStorage.setItem("split_jumlahOrang", JSON.stringify(peopleCount || 2));
                 sessionStorage.setItem("split_splitMethod", JSON.stringify(splitMethod));
 
-                sessionStorage.setItem("split_currentStep", JSON.stringify(5));
+                sessionStorage.setItem("split_currentStep", JSON.stringify(6));
 
-                navigate('/split', { state: { fromHistory: true } });
+                const paymentData = {
+                  type: bill.payment_type || 'rekening',
+                  bankName: bill.bank_name || '',
+                  accountNumber: bill.account_number || '',
+                  accountName: bill.account_name || '',
+                  qrImageUrl: bill.qr_image_url || ''
+                };
+
+                navigate('/split', { 
+                  state: { 
+                    fromHistory: true, 
+                    isViewingHistory: true, 
+                    billData: reconstructedBillData,
+                    paymentData: paymentData
+                  } 
+                });
               }}
               disabled={isPaid}
               className={`w-full font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm text-sm md:text-base ${isPaid ? 'bg-slate-200 text-slate-400 opacity-50 pointer-events-none' : 'bg-gradient-to-r from-emerald-400 to-teal-400 text-white hover:opacity-90 transition-opacity'}`}
