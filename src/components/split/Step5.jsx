@@ -1,19 +1,25 @@
 import React, { useRef, useState } from 'react'; // Tambah useState
 import { toBlob } from 'html-to-image';
-import { CheckCircle, Share2, Save, RotateCcw, Home, Wallet, QrCode } from 'lucide-react';
+import { CheckCircle, Share2, Save, RotateCcw, Home, Wallet } from 'lucide-react';
+import QRCode from 'react-qr-code';
 import api from '../../api'; // Import kurir Axios kita
 
 function Step5({
   billData,
   participants,
   splitMethod,
+  paymentData,
   onSave,
   handleReset,
   navigate,
-  onPrev
+  onPrev,
+  isViewingHistory
 }) {
   const receiptRef = useRef(null);
   const [isSaving, setIsSaving] = useState(false); // State buat nahan tombol biar ga di-klik 2x
+
+  // Defensive programming untuk URL Payment
+  const paymentLink = billData?.id ? `${window.location.origin}/payment?bill_id=${billData.id}` : '';
 
   const handleShare = async () => {
     // ... (Kodingan Share bawaan lo tetap aman nggak ada yang diubah)
@@ -102,21 +108,38 @@ function Step5({
         };
       });
 
-      // 3. Bungkus Payload
-      const payload = {
-        subtotal: subtotal,
-        discount: Math.round(nominalDiscount),
-        delivery_fee: Number(billData.deliveryFee) || 0,
-        service_fee: Number(billData.serviceFee) || 0,
-        packaging_fee: Number(billData.packagingFee) || 0,
-        tax_amount: Math.round(nominalTax),
-        grand_total: Math.round(Number(billData.grandTotal) || 0),
-        split_method: splitMethod,
-        participants: formattedParticipants
-      };
+      // 3. Bungkus Payload ke FormData
+      const formData = new FormData();
+      formData.append('subtotal', subtotal);
+      formData.append('discount', Math.round(nominalDiscount));
+      formData.append('delivery_fee', Number(billData.deliveryFee) || 0);
+      formData.append('service_fee', Number(billData.serviceFee) || 0);
+      formData.append('packaging_fee', Number(billData.packagingFee) || 0);
+      formData.append('tax_amount', Math.round(nominalTax));
+      formData.append('grand_total', Math.round(Number(billData.grandTotal) || 0));
+      formData.append('split_method', splitMethod);
+
+      // Karena FormData tidak bisa menerima array/object bersarang secara langsung, kita stringify participants
+      formData.append('participants', JSON.stringify(formattedParticipants));
+
+      // Append data pembayaran
+      if (paymentData) {
+        formData.append('payment_type', paymentData.type);
+        if (paymentData.type === 'rekening') {
+          formData.append('bank_name', paymentData.bankName || '');
+          formData.append('account_number', paymentData.accountNumber || '');
+          formData.append('account_name', paymentData.accountName || '');
+        } else if (paymentData.type === 'qr' && paymentData.qrFile) {
+          formData.append('qr_image', paymentData.qrFile);
+        }
+      }
 
       // 4. Tembak ke API Backend
-      const response = await api.post('/bills', payload);
+      const response = await api.post('/bills', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
       alert('✅ ' + response.data.message); // Notif sukses
 
       // 5. Bersihkan SessionStorage biar ga nyangkut
@@ -173,19 +196,6 @@ function Step5({
                 const perPerson = (Number(billData.grandTotal) || 0) / participants.length;
                 return (
                   <div key={p.id || i} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
-                    {/* QR Code Murni */}
-                    {i === 0 && (
-                      <div className="mb-6 flex flex-col md:flex-row items-center gap-4 bg-purple-50/50 p-4 rounded-xl border border-purple-100">
-                        <div className="bg-white p-3 rounded-xl shadow-sm shrink-0">
-                          <QrCode className="w-16 h-16 md:w-20 md:h-20 text-slate-800" strokeWidth={1.5} />
-                        </div>
-                        <div className="text-left text-sm text-slate-600 leading-relaxed">
-                          Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{participants[0]?.name || 'Penalang'}</span>.
-                          <br />
-                          <span className="text-xs text-slate-500">Bisa transfer manual via GoPay, DANA, OVO, atau ShopeePay.</span>
-                        </div>
-                      </div>
-                    )}
                     <div className="flex justify-between font-bold mb-4">
                       <span className="text-slate-800">{p.name || `Orang ${i + 1}`}</span>
                       <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(perPerson || 0)}</span>
@@ -208,19 +218,6 @@ function Step5({
 
                 return (
                   <div key={p.id || i} className="border border-slate-100 rounded-2xl p-6 shadow-sm">
-                    {/* QR Code Custom */}
-                    {i === 0 && (
-                      <div className="mb-6 flex flex-col md:flex-row items-center gap-4 bg-purple-50/50 p-4 rounded-xl border border-purple-100">
-                        <div className="bg-white p-3 rounded-xl shadow-sm shrink-0">
-                          <QrCode className="w-16 h-16 md:w-20 md:h-20 text-slate-800" strokeWidth={1.5} />
-                        </div>
-                        <div className="text-left text-sm text-slate-600 leading-relaxed">
-                          Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{participants[0]?.name || 'Penalang'}</span>.
-                          <br />
-                          <span className="text-xs text-slate-500">Bisa transfer manual via GoPay, DANA, OVO, atau ShopeePay.</span>
-                        </div>
-                      </div>
-                    )}
                     <div className="flex justify-between font-bold mb-1">
                       <span className="text-slate-800">{p.name || `Orang ${i + 1}`}</span>
                       <span className="text-blue-500">Rp {new Intl.NumberFormat('id-ID').format(totalBayar || 0)}</span>
@@ -251,6 +248,43 @@ function Step5({
             })}
           </div>
         </div>
+
+        {/* === INFO PEMBAYARAN === */}
+        <div className="mb-8">
+          <h3 className="font-bold text-slate-800 mb-4 text-left">Metode Pembayaran</h3>
+          {paymentData?.type === 'qr' && (paymentData?.qrFile || paymentData?.qrImageUrl) ? (
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center">
+              <img
+                src={isViewingHistory && paymentData.qrImageUrl ? paymentData.qrImageUrl : paymentData.qrFile ? URL.createObjectURL(paymentData.qrFile) : ''}
+                alt="QRIS Pembayaran"
+                className="w-48 h-48 object-cover rounded-xl shadow-md mb-4 border border-slate-100"
+              />
+              <p className="text-sm text-slate-600 font-medium text-center">
+                Pindai QRIS di atas untuk membayar ke <span className="font-bold text-slate-800">{participants[0]?.name || 'Penalang'}</span>.
+              </p>
+            </div>
+          ) : paymentData?.type === 'rekening' ? (
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-100 text-left">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-blue-500">
+                  <Wallet className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-blue-500 uppercase tracking-wider">Bank / E-Wallet</p>
+                  <p className="font-bold text-slate-800">{paymentData.bankName || '-'}</p>
+                </div>
+              </div>
+
+              <div className="bg-white/60 p-4 rounded-xl border border-white">
+                <p className="text-xs text-slate-500 mb-1">Nomor Rekening / HP</p>
+                <p className="font-mono text-lg font-bold text-slate-800 mb-3 tracking-wide">{paymentData.accountNumber || '-'}</p>
+
+                <p className="text-xs text-slate-500 mb-1">Atas Nama</p>
+                <p className="font-semibold text-slate-700">{paymentData.accountName || '-'}</p>
+              </div>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       {/* === TOMBOL AKSI === */}
@@ -263,28 +297,38 @@ function Step5({
             <Share2 className="w-4 h-4" /> Share
           </button>
 
-          {/* TOMBOL SIMPAN DIUBAH MENGGUNAKAN handleSaveToDatabase */}
-          <button
-            onClick={handleSaveToDatabase}
-            disabled={isSaving}
-            className="w-full bg-white border border-green-200 text-green-500 font-semibold py-3 rounded-xl hover:bg-green-50 transition-colors flex items-center justify-center gap-2 text-sm disabled:opacity-50"
-          >
-            <Save className="w-4 h-4" /> {isSaving ? 'Menyimpan...' : 'Simpan'}
-          </button>
+          {!isViewingHistory ? (
+            <>
+              <button
+                onClick={handleSaveToDatabase}
+                disabled={isSaving}
+                className="w-full bg-white border border-green-200 text-green-500 font-semibold py-3 rounded-xl hover:bg-green-50 transition-colors flex items-center justify-center gap-2 text-sm disabled:opacity-50"
+              >
+                <Save className="w-4 h-4" /> {isSaving ? 'Menyimpan...' : 'Simpan'}
+              </button>
 
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="w-full bg-slate-50 border border-slate-200 text-slate-600 font-semibold py-3 rounded-xl hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
-          >
-            <Home className="w-4 h-4" /> Ke Dashboard
-          </button>
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="w-full bg-slate-50 border border-slate-200 text-slate-600 font-semibold py-3 rounded-xl hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+              >
+                <Home className="w-4 h-4" /> Ke Dashboard
+              </button>
 
-          <button
-            onClick={handleReset}
-            className="w-full bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm shadow-sm"
-          >
-            <RotateCcw className="w-4 h-4" /> Buat Lagi
-          </button>
+              <button
+                onClick={handleReset}
+                className="w-full bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm shadow-sm"
+              >
+                <RotateCcw className="w-4 h-4" /> Buat Lagi
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={onPrev}
+              className="w-full bg-slate-50 border border-slate-200 text-slate-600 font-semibold py-3 rounded-xl hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+            >
+              <RotateCcw className="w-4 h-4" /> Kembali ke Riwayat
+            </button>
+          )}
         </div>
       </div>
     </div>
