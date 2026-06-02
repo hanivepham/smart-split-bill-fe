@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'; // Tambah useState
 import { toBlob } from 'html-to-image';
-import { CheckCircle, Share2, Save, RotateCcw, Home, Wallet, QrCode } from 'lucide-react';
+import { CheckCircle, Share2, Save, RotateCcw, Home, Wallet } from 'lucide-react';
+import QRCode from 'react-qr-code';
 import api from '../../api'; // Import kurir Axios kita
 
 function Step5({
@@ -16,6 +17,9 @@ function Step5({
 }) {
   const receiptRef = useRef(null);
   const [isSaving, setIsSaving] = useState(false); // State buat nahan tombol biar ga di-klik 2x
+
+  // Defensive programming untuk URL Payment
+  const paymentLink = billData?.id ? `${window.location.origin}/payment?bill_id=${billData.id}` : '';
 
   const handleShare = async () => {
     // ... (Kodingan Share bawaan lo tetap aman nggak ada yang diubah)
@@ -114,7 +118,7 @@ function Step5({
       formData.append('tax_amount', Math.round(nominalTax));
       formData.append('grand_total', Math.round(Number(billData.grandTotal) || 0));
       formData.append('split_method', splitMethod);
-      
+
       // Karena FormData tidak bisa menerima array/object bersarang secara langsung, kita stringify participants
       formData.append('participants', JSON.stringify(formattedParticipants));
 
@@ -250,10 +254,10 @@ function Step5({
           <h3 className="font-bold text-slate-800 mb-4 text-left">Metode Pembayaran</h3>
           {paymentData?.type === 'qr' && (paymentData?.qrFile || paymentData?.qrImageUrl) ? (
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center">
-              <img 
-                src={isViewingHistory && paymentData.qrImageUrl ? paymentData.qrImageUrl : paymentData.qrFile ? URL.createObjectURL(paymentData.qrFile) : ''} 
-                alt="QRIS Pembayaran" 
-                className="w-48 h-48 object-cover rounded-xl shadow-md mb-4 border border-slate-100" 
+              <img
+                src={isViewingHistory && paymentData.qrImageUrl ? paymentData.qrImageUrl : paymentData.qrFile ? URL.createObjectURL(paymentData.qrFile) : ''}
+                alt="QRIS Pembayaran"
+                className="w-48 h-48 object-cover rounded-xl shadow-md mb-4 border border-slate-100"
               />
               <p className="text-sm text-slate-600 font-medium text-center">
                 Pindai QRIS di atas untuk membayar ke <span className="font-bold text-slate-800">{participants[0]?.name || 'Penalang'}</span>.
@@ -270,11 +274,11 @@ function Step5({
                   <p className="font-bold text-slate-800">{paymentData.bankName || '-'}</p>
                 </div>
               </div>
-              
+
               <div className="bg-white/60 p-4 rounded-xl border border-white">
                 <p className="text-xs text-slate-500 mb-1">Nomor Rekening / HP</p>
                 <p className="font-mono text-lg font-bold text-slate-800 mb-3 tracking-wide">{paymentData.accountNumber || '-'}</p>
-                
+
                 <p className="text-xs text-slate-500 mb-1">Atas Nama</p>
                 <p className="font-semibold text-slate-700">{paymentData.accountName || '-'}</p>
               </div>
