@@ -16,6 +16,9 @@ function Step5({
   const receiptRef = useRef(null);
   const [isSaving, setIsSaving] = useState(false); // State buat nahan tombol biar ga di-klik 2x
 
+  // Defensive programming untuk URL Payment
+  const paymentLink = billData?.id ? `${window.location.origin}/payment?bill_id=${billData.id}` : '';
+
   const handleShare = async () => {
     // ... (Kodingan Share bawaan lo tetap aman nggak ada yang diubah)
     if (!receiptRef.current) return;
@@ -178,7 +181,13 @@ function Step5({
                     {i === 0 && (
                       <div className="mb-6 flex flex-col md:flex-row items-center gap-4 bg-purple-50/50 p-4 rounded-xl border border-purple-100">
                         <div className="bg-white p-3 rounded-xl shadow-sm shrink-0">
-                          <QRCode value={`${window.location.origin}/payment?bill_id=${billData.id || ''}`} size={80} />
+                          {billData?.id ? (
+                            <QRCode value={paymentLink} size={80} />
+                          ) : (
+                            <div className="w-[80px] h-[80px] bg-slate-100 flex items-center justify-center text-[10px] text-slate-400 text-center rounded-lg border border-slate-200">
+                              Memuat QR...
+                            </div>
+                          )}
                         </div>
                         <div className="text-left text-sm text-slate-600 leading-relaxed">
                           Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{participants[0]?.name || 'Penalang'}</span>.
@@ -213,7 +222,13 @@ function Step5({
                     {i === 0 && (
                       <div className="mb-6 flex flex-col md:flex-row items-center gap-4 bg-purple-50/50 p-4 rounded-xl border border-purple-100">
                         <div className="bg-white p-3 rounded-xl shadow-sm shrink-0">
-                          <QRCode value={`${window.location.origin}/payment?bill_id=${billData.id || ''}`} size={80} />
+                          {billData?.id ? (
+                            <QRCode value={paymentLink} size={80} />
+                          ) : (
+                            <div className="w-[80px] h-[80px] bg-slate-100 flex items-center justify-center text-[10px] text-slate-400 text-center rounded-lg border border-slate-200">
+                              Memuat QR...
+                            </div>
+                          )}
                         </div>
                         <div className="text-left text-sm text-slate-600 leading-relaxed">
                           Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{participants[0]?.name || 'Penalang'}</span>.
