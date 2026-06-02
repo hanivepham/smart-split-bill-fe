@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'; // Tambah useState
 import { toBlob } from 'html-to-image';
-import { CheckCircle, Share2, Save, RotateCcw, Home, Wallet, QrCode } from 'lucide-react';
+import { CheckCircle, Share2, Save, RotateCcw, Home, Wallet } from 'lucide-react';
+import QRCode from 'react-qr-code';
 import api from '../../api'; // Import kurir Axios kita
 
 function Step5({
@@ -177,7 +178,7 @@ function Step5({
                     {i === 0 && (
                       <div className="mb-6 flex flex-col md:flex-row items-center gap-4 bg-purple-50/50 p-4 rounded-xl border border-purple-100">
                         <div className="bg-white p-3 rounded-xl shadow-sm shrink-0">
-                          <QrCode className="w-16 h-16 md:w-20 md:h-20 text-slate-800" strokeWidth={1.5} />
+                          <QRCode value={`${window.location.origin}/payment?bill_id=${billData.id || ''}`} size={80} />
                         </div>
                         <div className="text-left text-sm text-slate-600 leading-relaxed">
                           Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{participants[0]?.name || 'Penalang'}</span>.
@@ -212,7 +213,7 @@ function Step5({
                     {i === 0 && (
                       <div className="mb-6 flex flex-col md:flex-row items-center gap-4 bg-purple-50/50 p-4 rounded-xl border border-purple-100">
                         <div className="bg-white p-3 rounded-xl shadow-sm shrink-0">
-                          <QrCode className="w-16 h-16 md:w-20 md:h-20 text-slate-800" strokeWidth={1.5} />
+                          <QRCode value={`${window.location.origin}/payment?bill_id=${billData.id || ''}`} size={80} />
                         </div>
                         <div className="text-left text-sm text-slate-600 leading-relaxed">
                           Pindai QR ini untuk membayar ke <span className="font-bold text-slate-800">{participants[0]?.name || 'Penalang'}</span>.
