@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'; // Tambah useState
+import React, { useRef, useState, useEffect } from 'react';
 import { toBlob } from 'html-to-image';
 import { CheckCircle, Share2, Save, RotateCcw, Home, Wallet } from 'lucide-react';
 import QRCode from 'react-qr-code';
@@ -17,6 +17,17 @@ function Step5({
 }) {
   const receiptRef = useRef(null);
   const [isSaving, setIsSaving] = useState(false); // State buat nahan tombol biar ga di-klik 2x
+  const [qrBase64, setQrBase64] = useState(null);
+
+  useEffect(() => {
+    if (paymentData?.qrFile) {
+      const reader = new FileReader();
+      reader.onload = (e) => setQrBase64(e.target.result);
+      reader.readAsDataURL(paymentData.qrFile);
+    } else {
+      setQrBase64(null);
+    }
+  }, [paymentData?.qrFile]);
 
   // Defensive programming untuk URL Payment
   const paymentLink = billData?.id ? `${window.location.origin}/payment?bill_id=${billData.id}` : '';
@@ -258,7 +269,7 @@ function Step5({
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center">
               <img
                 crossOrigin="anonymous"
-                src={isViewingHistory && safeQrUrl ? safeQrUrl : paymentData?.qrFile ? URL.createObjectURL(paymentData.qrFile) : ''}
+                src={isViewingHistory && safeQrUrl ? safeQrUrl : qrBase64 || ''}
                 alt="QRIS Pembayaran"
                 className="w-48 h-48 object-cover rounded-xl shadow-md mb-4 border border-slate-100"
               />
