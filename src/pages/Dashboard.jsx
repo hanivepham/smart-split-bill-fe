@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calculator, Plus, Clock, Home } from 'lucide-react';
+import { Calculator, Plus, Clock, Home, LogOut } from 'lucide-react';
+import api from '../api';
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -20,6 +21,17 @@ function Dashboard() {
         navigate('/split');
     };
 
+    const handleLogout = async () => {
+        try {
+            await api.post('/logout');
+        } catch (error) {
+            console.error('Logout failed', error);
+        } finally {
+            localStorage.removeItem('token');
+            navigate('/login');
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col">
             {/* HEADER */}
@@ -37,8 +49,8 @@ function Dashboard() {
                     </Link>
                 </div>
 
-                <div className="shrink-0 ml-2">
-                    <div onClick={() => navigate('/home')} className="cursor-pointer p-2 flex items-center justify-center text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-all">
+                <div className="flex shrink-0 gap-1 ml-2">
+                    <div onClick={() => navigate('/home')} title="Home" className="cursor-pointer p-2 flex items-center justify-center text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-all">
                         <Home size={24} />
                     </div>
                 </div>
@@ -88,4 +100,4 @@ function Dashboard() {
     );
 }
 
-export default Dashboard; //test
+export default Dashboard;

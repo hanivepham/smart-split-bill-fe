@@ -19,7 +19,7 @@ function Step4Rata({
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3 mb-8">
         <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
         <p className="text-sm text-blue-700">
-          <span className="font-bold">Pembagian Otomatis: </span> 
+          <span className="font-bold">Pembagian Otomatis: </span>
           Semua biaya (diskon, ongkir, service, packaging) dibagi rata untuk semua orang
         </p>
       </div>
@@ -29,7 +29,7 @@ function Step4Rata({
         {participants.map((p, index) => {
           // Hitung pembagian rata
           const perPerson = (Number(totalTagihan) || 0) / participants.length;
-          
+
           return (
             <div key={p.id} className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
               <h3 className="font-bold text-slate-800 mb-4">{p.name || `Orang ${index + 1}`}</h3>
@@ -69,7 +69,7 @@ function Step4Rata({
 
       {/* Tombol Lanjut ke Ringkasan */}
       <div>
-        <button 
+        <button
           onClick={() => setCurrentStep(5)}
           className="w-full bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-4 rounded-xl hover:opacity-90 transition shadow-md"
         >
