@@ -31,11 +31,15 @@ export default function Login() {
 
       navigate('/home');
     } catch (err) {
-      if (err.response?.status === 403) {
-        alert('Email belum terdaftar atau terverifikasi. Silahkan cek kotak masuk/spam email Anda.');
-        setError('Email belum terverifikasi.');
+      if (!err.response) {
+        setError('Terjadi kesalahan pada server. Pastikan koneksi aman atau coba lagi nanti.');
       } else {
-        setError(err.response?.data?.message || 'Login gagal. Periksa kembali kredensial Anda.');
+        if (err.response.status === 403) {
+          alert('Email belum terdaftar atau terverifikasi. Silahkan cek kotak masuk/spam email Anda.');
+          setError('Email belum terverifikasi.');
+        } else {
+          setError(err.response.data?.message || 'Email atau password salah');
+        }
       }
     } finally {
       setIsLoading(false);
