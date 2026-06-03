@@ -41,7 +41,7 @@ export default function Register() {
         password_confirmation: passwordConfirmation 
       });
       
-      alert('Registrasi berhasil! Silahkan verifikasi email Anda sebelum login.');
+      window.alert('Akun berhasil didaftarkan. Silakan verifikasi email Anda untuk melanjutkan.');
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.message || 'Registrasi gagal. Coba lagi nanti.');
