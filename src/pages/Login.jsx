@@ -19,15 +19,16 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    
+
     try {
       const response = await api.post('/login', { email, password });
-      
+
       const token = response.data.token || response.data.access_token;
       if (token) {
         localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(response.data.user || response.data.data.user));
       }
-      
+
       navigate('/home');
     } catch (err) {
       if (err.response?.status === 403) {

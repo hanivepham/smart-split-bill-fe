@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calculator, CalendarDays, Loader2, Trash2 } from 'lucide-react';
+import { ArrowLeft, Calculator, CalendarDays, Loader2, Trash2, User } from 'lucide-react';
 import HistoryCard from '../components/history/HistoryCard';
 import api from '../api';
 
@@ -9,6 +9,19 @@ function History() {
   const [expandedId, setExpandedId] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const userObj = JSON.parse(userStr);
+        setUsername(userObj.username || userObj.name || null);
+      } catch (e) {
+        setUsername(userStr);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -69,18 +82,31 @@ function History() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col">
-      <header className="flex items-center gap-2 md:gap-4 px-4 py-4 md:px-8 md:py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
-        <Link to="/dashboard" className="p-2 hover:bg-slate-100 rounded-full transition shrink-0">
-          <ArrowLeft className="text-slate-600 w-5 h-5" />
-        </Link>
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="bg-gradient-to-r from-pink-400 to-blue-400 p-1.5 rounded-lg shrink-0">
-            <Calculator className="text-white w-5 h-5" />
+      <header className="flex items-center justify-between px-4 py-4 md:px-8 md:py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
+        <div className="flex items-center gap-2 md:gap-4">
+          <Link to="/dashboard" className="p-2 hover:bg-slate-100 rounded-full transition shrink-0">
+            <ArrowLeft className="text-slate-600 w-5 h-5" />
+          </Link>
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="bg-gradient-to-r from-pink-400 to-blue-400 p-1.5 rounded-lg shrink-0">
+              <Calculator className="text-white w-5 h-5" />
+            </div>
+            <span className="font-bold text-base md:text-lg bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500 truncate min-w-0">
+              Smart Bill Splitter
+            </span>
           </div>
-          <span className="font-bold text-base md:text-lg bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500 truncate min-w-0">
-            Smart Bill Splitter
-          </span>
         </div>
+
+        {username && (
+          <div className="flex items-center gap-2.5 bg-white border-2 border-pink-100 hover:border-pink-300 shadow-sm hover:shadow-md px-2 py-1.5 rounded-full transition-all duration-300 ml-1 md:ml-2">
+              <div className="bg-gradient-to-tr from-pink-400 to-blue-400 p-1.5 rounded-full shadow-sm shrink-0">
+                  <User size={14} className="text-white" />
+              </div>
+              <span className="font-bold text-sm md:text-base bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500 pr-2 hidden sm:inline truncate max-w-[100px] md:max-w-[150px]">
+                  {username}
+              </span>
+          </div>
+        )}
       </header>
 
       <main className="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 md:py-12">

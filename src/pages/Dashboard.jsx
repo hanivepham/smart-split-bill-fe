@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calculator, Plus, Clock, Home, LogOut } from 'lucide-react';
+import { Calculator, Plus, Clock, Home, LogOut, User } from 'lucide-react';
 import api from '../api';
 
 function Dashboard() {
     const navigate = useNavigate();
+    const [username, setUsername] = useState(null);
+
+    useEffect(() => {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            try {
+                const userObj = JSON.parse(userStr);
+                setUsername(userObj.username || userObj.name || null);
+            } catch (e) {
+                setUsername(userStr);
+            }
+        }
+    }, []);
 
     const handleStartSplit = () => {
         sessionStorage.removeItem("split_currentStep");
@@ -49,7 +62,17 @@ function Dashboard() {
                     </Link>
                 </div>
 
-                <div className="flex shrink-0 gap-1 ml-2">
+                <div className="flex items-center shrink-0 gap-2 md:gap-4 ml-2">
+                    {username && (
+                        <div className="flex items-center gap-2.5 bg-white border-2 border-pink-100 hover:border-pink-300 shadow-sm hover:shadow-md px-2 py-1.5 rounded-full transition-all duration-300 ml-1 md:ml-2">
+                            <div className="bg-gradient-to-tr from-pink-400 to-blue-400 p-1.5 rounded-full shadow-sm shrink-0">
+                                <User size={14} className="text-white" />
+                            </div>
+                            <span className="font-bold text-sm md:text-base bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500 pr-2 hidden sm:inline truncate max-w-[100px] md:max-w-[150px]">
+                                {username}
+                            </span>
+                        </div>
+                    )}
                     <div onClick={() => navigate('/home')} title="Home" className="cursor-pointer p-2 flex items-center justify-center text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-all">
                         <Home size={24} />
                     </div>
