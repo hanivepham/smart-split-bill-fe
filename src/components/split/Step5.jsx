@@ -162,6 +162,8 @@ function Step5({
     }
   };
 
+  const safeQrUrl = paymentData?.qrImageUrl?.replace('http://127.0.0.1:8000', '');
+
   return (
     <div className="bg-white p-4 sm:p-6 md:p-10 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 text-center">
       <div ref={receiptRef} className="bg-white p-2 sm:p-4 -mx-2 sm:-mx-4 rounded-xl">
@@ -255,7 +257,8 @@ function Step5({
           {paymentData?.type === 'qr' && (paymentData?.qrFile || paymentData?.qrImageUrl) ? (
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center">
               <img
-                src={isViewingHistory && paymentData.qrImageUrl ? paymentData.qrImageUrl : paymentData.qrFile ? URL.createObjectURL(paymentData.qrFile) : ''}
+                crossOrigin="anonymous"
+                src={isViewingHistory && safeQrUrl ? safeQrUrl : paymentData?.qrFile ? URL.createObjectURL(paymentData.qrFile) : ''}
                 alt="QRIS Pembayaran"
                 className="w-48 h-48 object-cover rounded-xl shadow-md mb-4 border border-slate-100"
               />

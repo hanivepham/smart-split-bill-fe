@@ -229,9 +229,11 @@ function Split() {
     return (
       <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12">
         <header className="flex items-center gap-2 md:gap-4 px-4 py-4 md:px-8 md:py-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
-          <button onClick={() => navigate('/history')} className="p-2 hover:bg-slate-100 rounded-full transition shrink-0">
-            <ArrowLeft className="text-slate-600 w-5 h-5" />
-          </button>
+          {!isViewingHistory && (
+            <button onClick={() => navigate('/history')} className="p-2 hover:bg-slate-100 rounded-full transition shrink-0">
+              <ArrowLeft className="text-slate-600 w-5 h-5" />
+            </button>
+          )}
           <div className="flex items-center gap-2 min-w-0">
             <div className="bg-gradient-to-r from-pink-400 to-blue-400 p-1.5 rounded-lg shrink-0">
               <Calculator className="text-white w-5 h-5" />
