@@ -7,20 +7,24 @@ import Split from './pages/Split';
 import History from './pages/History';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
     <BrowserRouter>
       <div className="overflow-x-hidden w-full max-w-[100vw] min-h-screen flex flex-col relative">
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Login />} />
-          <Route path="/home" element={<Home />} />
           <Route path="/features" element={<Features />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/split" element={<Split />} />
-          <Route path="/history" element={<History />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
+          {/* Protected Routes */}
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/split" element={<ProtectedRoute><Split /></ProtectedRoute>} />
+          <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
         </Routes>
       </div>
     </BrowserRouter>
