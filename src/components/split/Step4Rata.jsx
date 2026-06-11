@@ -67,13 +67,13 @@ function Step4Rata({
         </div>
       </div>
 
-      {/* Tombol Lanjut ke Ringkasan */}
+      {/* Tombol Lanjut ke Metode Pembayaran */}
       <div>
         <button
           onClick={() => setCurrentStep(5)}
           className="w-full bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-4 rounded-xl hover:opacity-90 transition shadow-md"
         >
-          Lanjut ke Ringkasan
+          Lanjut ke Metode Pembayaran
         </button>
       </div>
     </div>

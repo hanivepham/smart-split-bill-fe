@@ -53,6 +53,8 @@ function Step4Custom({
                     />
                     <input 
                       type="number" 
+                      min="0"
+                      onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
                       placeholder="Harga" 
                       value={item.price}
                       onChange={(e) => handleItemChange(pIndex, itemIndex, 'price', e.target.value)}
@@ -128,7 +130,7 @@ function Step4Custom({
               : 'bg-gradient-to-r from-pink-300 to-blue-300 opacity-60 text-white cursor-not-allowed'
           }`}
         >
-          Lanjut ke Ringkasan
+          Lanjut ke Metode Pembayaran
         </button>
       </div>
     </div>

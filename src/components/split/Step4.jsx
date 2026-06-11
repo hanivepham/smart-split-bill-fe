@@ -71,7 +71,7 @@ function Step4({
             onClick={onNext}
             className="w-full bg-gradient-to-r from-pink-400 to-blue-400 text-white font-bold py-4 rounded-xl hover:opacity-90 transition shadow-md"
           >
-            Lanjut ke Ringkasan
+            Lanjut ke Metode Pembayaran
           </button>
         </div>
       </div>
@@ -135,6 +135,8 @@ function Step4({
                     />
                     <input 
                       type="number" 
+                      min="0"
+                      onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
                       placeholder="Harga" 
                       value={item.price}
                       onChange={(e) => handleItemChange(pIndex, itemIndex, 'price', e.target.value)}
@@ -236,7 +238,7 @@ function Step4({
               : 'bg-gradient-to-r from-pink-300 to-blue-300 opacity-60 text-white cursor-not-allowed'
           }`}
         >
-          Lanjut ke Ringkasan
+          Lanjut ke Metode Pembayaran
         </button>
       </div>
     </div>

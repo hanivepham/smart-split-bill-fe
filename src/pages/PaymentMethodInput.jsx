@@ -93,7 +93,12 @@ const PaymentMethodInput = ({ onNext, onPrev, paymentData, setPaymentData }) => 
                             type="text"
                             name="accountNumber"
                             value={paymentData?.accountNumber || ''}
-                            onChange={handleInputChange}
+                            onChange={(e) => {
+                                const numericValue = e.target.value.replace(/\D/g, '');
+                                setPaymentData({ ...paymentData, accountNumber: numericValue, type: 'rekening' });
+                            }}
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             placeholder="Contoh: 081234567890"
                             disabled={!isBankSelected}
                             className={`w-full border text-sm rounded-xl block p-3 outline-none transition-all ${!isBankSelected ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-50 border-slate-200 text-slate-800 focus:ring-blue-500 focus:border-blue-500'}`}
@@ -152,7 +157,7 @@ const PaymentMethodInput = ({ onNext, onPrev, paymentData, setPaymentData }) => 
                 <button
                     onClick={onNext}
                     disabled={!isValid}
-                    className={`w-full py-3 text-sm font-semibold text-white rounded-xl shadow-md transition-all ${!isValid ? 'bg-slate-300 cursor-not-allowed opacity-70' : 'bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90'}`}
+                    className="w-full font-bold py-4 bg-gradient-to-r from-pink-400 to-blue-400 text-white rounded-xl shadow-md transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     Lanjut Ringkasan
                 </button>

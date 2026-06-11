@@ -218,7 +218,7 @@ function Split() {
     sessionStorage.removeItem("split_splitMethod");
     setPaymentData({ type: 'rekening' });
     setCurrentStep(1);
-    navigate('/input-method');
+    navigate('/split');
   };
 
   const isViewingHistory = location.state?.isViewingHistory;

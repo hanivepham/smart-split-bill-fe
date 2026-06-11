@@ -76,7 +76,7 @@ function History() {
     sessionStorage.removeItem("split_jumlahOrang");
     sessionStorage.removeItem("split_splitMethod");
 
-    // LANSUNG TEMBAK KE /split (Bukan ke /input-method lagi)
+    
     navigate('/split');
   };
 

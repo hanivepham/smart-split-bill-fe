@@ -79,6 +79,8 @@ function Step1({
           </label>
           <input 
             type="number" 
+            min="0"
+            onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
             placeholder="Contoh: 500000" 
             value={billData.subtotal}
             onChange={(e) => handleChange('subtotal', e.target.value)}
@@ -95,6 +97,7 @@ function Step1({
           <input 
             type="number" 
             min="2"
+            onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
             placeholder="2" 
             value={jumlahOrang}
             onChange={(e) => setJumlahOrang(e.target.value)}
@@ -119,6 +122,8 @@ function Step1({
           <div className="flex gap-2 md:gap-3 min-w-0">
             <input 
               type="number" 
+              min="0"
+              onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
               placeholder="Contoh: 50000 atau 10" 
               value={billData.discount}
               onChange={(e) => handleChange('discount', e.target.value)}
@@ -143,6 +148,8 @@ function Step1({
           </label>
           <input 
             type="number" 
+            min="0"
+            onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
             placeholder="Contoh: 15000" 
             value={billData.deliveryFee}
             onChange={(e) => handleChange('deliveryFee', e.target.value)}
@@ -158,6 +165,8 @@ function Step1({
           </label>
           <input 
             type="number" 
+            min="0"
+            onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
             placeholder="Contoh: 5000" 
             value={billData.serviceFee}
             onChange={(e) => handleChange('serviceFee', e.target.value)}
@@ -173,6 +182,8 @@ function Step1({
           </label>
           <input 
             type="number" 
+            min="0"
+            onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
             placeholder="Contoh: 2000" 
             value={billData.packagingFee}
             onChange={(e) => handleChange('packagingFee', e.target.value)}
@@ -188,6 +199,8 @@ function Step1({
           </label>
           <input 
             type="number" 
+            min="0"
+            onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
             placeholder="Contoh: 10" 
             value={billData.taxPercentage}
             onChange={(e) => handleChange('taxPercentage', e.target.value)}
